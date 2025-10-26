@@ -1,0 +1,45 @@
+# Unity generated
+Library/
+Temp/
+Obj/
+Build/
+Builds/
+UserSettings/
+
+# Visual Studio / Rider
+.vs/
+*.csproj
+*.sln
+*.unityproj
+*.pidb
+*.suo
+*.user
+*.userprefs
+*.unityproj
+*.booproj
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Unity cache
+MemoryCaptures/
+
+# Crash reports
+sysinfo.txt
+
+# Builds
+*.apk
+*.aab
+*.exe
+*.apk
+*.x86
+*.x86_64
+
+# LFS placeholders (if you use LFS)
+*.psd
+*.png
+*.jpg
+*.fbx
+*.wav
+*.mp3
