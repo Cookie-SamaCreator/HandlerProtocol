@@ -1,6 +1,6 @@
 # Handler Protocol (Prototype)
 
-**Pitch**: asymetrci futuristic Coop FPS— *Ciphers* are retrieving an artefact while the *Handler* supports them via it's command drone.
+**Pitch**: Asymetric futuristic Coop FPS— *Ciphers* are retrieving an artefact while the *Handler* supports them via it's command drone.
 
 ## Repo Content
 - Unity project (Assets/, ProjectSettings/)
