@@ -13,24 +13,30 @@ public class CipherController : MonoBehaviour
 
     [Header("Look")]
     public Transform cameraHolder;
-    public float mouseSensitivity = 1.0f;
-    public float pitchMin = -85f, pitchMax = 85f;
+    public float sensitivityX = 1.2f;
+    public float sensitivityY = 1.0f;
+    public float minPitch = -85f;
+    public float maxPitch = 85f;
+    private float cameraPitch = 0f;
 
     [Space]
     public Weapon currentWeapon;
 
+    [Header("Network Simulation")]
+    public bool isLocalPlayer = true; // IsOwner
+
+    public bool IsMoving => moveInput.magnitude > 0.1f;
+    public bool IsSprinting => isSprinting && (stamina == null || stamina.HasStamina());
+    public bool StaminaAvailable() => stamina == null || stamina.HasStamina();
+    
     private CharacterController cc;
     private Vector2 moveInput;
     private Vector2 lookInput;
     private float verticalVelocity;
-    private float pitch = 0f;
     private bool isSprinting;
     private bool firePressed;
     private Stamina stamina;
     private PlayerControls controls;
-
-
-
 
     private void Awake()
     {
@@ -43,13 +49,11 @@ public class CipherController : MonoBehaviour
 
     private void Update()
     {
+        if (!isLocalPlayer) return;
+        
         HandleLook();
         HandleMovement();
         HandleFire();
-        if (stamina != null)
-        {
-            Debug.Log($"Stamina: {stamina.currentStamina:0.0}/{stamina.maxStamina}");
-        }
     }
 
     #region Input
@@ -77,16 +81,22 @@ public class CipherController : MonoBehaviour
 
     private void HandleLook()
     {
-        Vector2 look = lookInput * mouseSensitivity;
-        float yaw = look.x;
-        float pitchDelta = -look.y;
-
-        transform.Rotate(Vector3.up, yaw, Space.Self);
-
-        pitch += pitchDelta;
-        pitch = Mathf.Clamp(pitch, pitchMin, pitchMax);
-        if (cameraHolder) cameraHolder.localEulerAngles = Vector3.right * pitch;
+        float deltaTime = Time.deltaTime;
+    
+        float lookX = lookInput.x * sensitivityX;
+        float lookY = lookInput.y * sensitivityY;
+    
+        transform.Rotate(Vector3.up * lookX, Space.Self);
+    
+        cameraPitch -= lookY;
+        cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
+    
+        if (cameraHolder != null)
+        {
+            cameraHolder.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
+        }
     }
+
 
     private void HandleMovement()
     {
@@ -94,6 +104,7 @@ public class CipherController : MonoBehaviour
         Vector3 worldMove = transform.TransformDirection(input);
 
         bool sprintHeld = controls.Cipher.Sprint.ReadValue<float>() > 0.5f;
+        isSprinting = sprintHeld;
 
         bool isMovingForward = moveInput.magnitude > 0.1f || moveInput.y > 0.1f ;
         bool canSprint = sprintHeld && isMovingForward && stamina != null && stamina.HasStamina();
@@ -127,4 +138,11 @@ public class CipherController : MonoBehaviour
             currentWeapon.TryFire();
         }
     }
+
+    public void SetSensitivity(float x, float y)
+    {
+        sensitivityX = x;
+        sensitivityY = y;
+    }
+
 }

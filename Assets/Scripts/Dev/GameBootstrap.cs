@@ -1,35 +1,50 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class GameBootstrap : MonoBehaviour
 {
-    [Header("Player Prefab")]
+    [Header("Prefabs")]
     public GameObject cipherPrefab;
+    public GameObject playerCamPrefab;
     public GameObject hudPrefab;
 
-    [Header("Spawn Point")]
-    public Transform spawnPoint;
+    [Header("Setup")]
+    public Transform[] spawnPoints;
 
-    private void Start()
+    private List<CipherController> activePlayers = new();
+
+    void Start()
     {
-        if (cipherPrefab == null || spawnPoint == null || hudPrefab == null)
+        // Simule 1 joueur local (plus tard: remplacé par un spawn réseau)
+        SpawnLocalPlayer();
+    }
+
+    public void SpawnLocalPlayer()
+    {
+        if (cipherPrefab == null || playerCamPrefab == null) return;
+
+        Transform spawn = spawnPoints.Length > 0
+            ? spawnPoints[Random.Range(0, spawnPoints.Length)]
+            : null;
+
+        GameObject playerObj = Instantiate(cipherPrefab, spawn?.position ?? Vector3.zero, Quaternion.identity);
+        CipherController playerController = playerObj.GetComponent<CipherController>();
+        activePlayers.Add(playerController);
+
+        GameObject cam = Instantiate(playerCamPrefab);
+        if(!cam.TryGetComponent<CinemachineSprintFX>(out var cinemachineCam))
         {
-            Debug.LogError("[GameBootstrap] Missing references in GameBootstrap!");
+            Debug.LogError("Could not find cinemachineSprintFX");
             return;
         }
+        cinemachineCam.BindCipherPlayer(playerController);
 
-        GameObject player = Instantiate(cipherPrefab, spawnPoint.position, spawnPoint.rotation);
-        player.name = "LocalPlayer_Cipher";
-
-        if (!player.TryGetComponent<Stamina>(out var playerStamina))
+        GameObject hud = Instantiate(hudPrefab);
+        if (!hud.TryGetComponent<StaminaUI>(out var staminaUI))
         {
-            Debug.LogError("[GameBootstrap] No stamina detected on Player");
+            Debug.LogError("Could not find StaminaUI");
+            return;
         }
-
-        GameObject playerHUD = Instantiate(hudPrefab);
-        if (!playerHUD.TryGetComponent<StaminaUI>(out var staminaUI))
-        {
-            Debug.LogError("[GameBootstrap] No stamina detected on HUD");
-        }
-        staminaUI.BindPlayer(playerStamina);
+        staminaUI.BindPlayer(playerObj.GetComponent<Stamina>());
     }
 }
