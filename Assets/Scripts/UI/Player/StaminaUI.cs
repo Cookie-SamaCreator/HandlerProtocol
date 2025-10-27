@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,8 +6,8 @@ public class StaminaUI : MonoBehaviour
 {
     [Header("References")]
     public Image staminaFill;
-
     private Stamina playerStamina;
+    public TMP_Text staminaText;
 
     public void BindPlayer(Stamina pStamina)
     {
@@ -31,5 +32,11 @@ public class StaminaUI : MonoBehaviour
         {
             staminaFill.fillAmount = current / max;
         }
+
+        if (staminaText != null)
+        {
+            staminaText.text = $"{Mathf.FloorToInt(current)} / {max}";
+        }
+
     }
 }

@@ -27,6 +27,8 @@ public class CipherController : MonoBehaviour
     private bool isSprinting;
     private bool firePressed;
     private Stamina stamina;
+    private PlayerControls controls;
+
 
 
 
@@ -35,6 +37,8 @@ public class CipherController : MonoBehaviour
         cc = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         stamina = GetComponent<Stamina>();
+        controls = new PlayerControls();
+        controls.Cipher.Enable();
     }
 
     private void Update()
@@ -69,11 +73,6 @@ public class CipherController : MonoBehaviour
 
     public void OnFire(InputValue value) => firePressed = value.isPressed;
 
-    public void OnSprint(InputValue value)
-    {
-        isSprinting = value.isPressed;
-    }
-
     #endregion
 
     private void HandleLook()
@@ -94,20 +93,22 @@ public class CipherController : MonoBehaviour
         Vector3 input = new(moveInput.x, 0f, moveInput.y);
         Vector3 worldMove = transform.TransformDirection(input);
 
-        bool canSprint = isSprinting && stamina != null && stamina.HasStamina();
+        bool sprintHeld = controls.Cipher.Sprint.ReadValue<float>() > 0.5f;
+
+        bool isMovingForward = moveInput.magnitude > 0.1f || moveInput.y > 0.1f ;
+        bool canSprint = sprintHeld && isMovingForward && stamina != null && stamina.HasStamina();
+
         float targetSpeed = canSprint ? sprintSpeed : walkSpeed;
 
-        if (isSprinting && stamina != null)
+        if (canSprint)
         {
-            if (canSprint)
-                stamina.StartDraining();
-            else
-                stamina.StopDraining();
+            stamina.StartDraining();
         }
-        else if (stamina != null)
+        else
         {
             stamina.StopDraining();
         }
+
 
         if (cc.isGrounded && verticalVelocity < 0) verticalVelocity = -2f;
 
