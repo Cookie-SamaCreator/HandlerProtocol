@@ -1,0 +1,35 @@
+using UnityEngine;
+using UnityEngine.UI;
+
+public class StaminaUI : MonoBehaviour
+{
+    [Header("References")]
+    public Image staminaFill;
+
+    private Stamina playerStamina;
+
+    public void BindPlayer(Stamina pStamina)
+    {
+        playerStamina = pStamina;
+
+        if (playerStamina != null)
+        {
+            playerStamina.onStaminaChanged += UpdateStaminaBar;
+            UpdateStaminaBar(playerStamina.currentStamina, playerStamina.maxStamina);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (playerStamina != null)
+            playerStamina.onStaminaChanged -= UpdateStaminaBar;
+    }
+
+    private void UpdateStaminaBar(float current, float max)
+    {
+        if (staminaFill != null)
+        {
+            staminaFill.fillAmount = current / max;
+        }
+    }
+}
