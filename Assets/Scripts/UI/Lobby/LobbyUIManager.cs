@@ -24,6 +24,12 @@ public class LobbyUIManager : MonoBehaviour
     private LobbyController lobbyController;
     private Dictionary<CSteamID, PlayerEntryUI> playerEntries = new();
 
+    private void Awake()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
     private void Start()
     {
         lobbyController = FindFirstObjectByType<LobbyController>();

@@ -47,6 +47,15 @@ public class CipherController : MonoBehaviour
         controls.Cipher.Enable();
     }
 
+    private void OnEnable()
+    {
+        controls.Cipher.Enable();
+    }
+    private void OnDisable()
+    {
+        controls.Cipher.Disable();
+    }
+
     private void Update()
     {
         if (!isLocalPlayer) return;

@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 1035625371086858652}
   - component: {fileID: 1823239942278711801}
   - component: {fileID: 5994195717821154054}
+  - component: {fileID: 1829314617547860009}
+  - component: {fileID: -6739932171625043002}
   m_Layer: 0
   m_Name: Cipher
   m_TagString: Untagged
@@ -79,10 +81,12 @@ MonoBehaviour:
   gravity: -9.81
   jumpHeight: 1.2
   cameraHolder: {fileID: 7296746932524468759}
-  mouseSensitivity: 1
-  pitchMin: -85
-  pitchMax: 85
+  sensitivityX: 1.2
+  sensitivityY: 1
+  minPitch: -85
+  maxPitch: 85
   currentWeapon: {fileID: 7142249516880298432}
+  isLocalPlayer: 1
 --- !u!114 &1035625371086858652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -144,6 +148,40 @@ MonoBehaviour:
   m_DefaultActionMap: Cipher
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &1829314617547860009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6331411197361015059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d206f48c4ad9db44bad7f770cf3208c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetworkCipherPlayer
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  playerCamPrefab: {fileID: 6490902202331186330, guid: a59a9fb133bb43e43820a1bf8c5f7a7f, type: 3}
+  hudPrefab: {fileID: 3035608438782129950, guid: a13631132bf60864d95c54aa818f6e87, type: 3}
+--- !u!114 &-6739932171625043002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6331411197361015059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
+  sceneId: 0
+  _assetId: 3236781120
+  serverOnly: 1
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &7115906298721558132
 GameObject:
   m_ObjectHideFlags: 0
