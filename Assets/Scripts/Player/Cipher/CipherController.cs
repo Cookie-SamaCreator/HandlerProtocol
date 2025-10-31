@@ -23,7 +23,7 @@ public class CipherController : MonoBehaviour
     public Weapon currentWeapon;
 
     [Header("Network Simulation")]
-    public bool isLocalPlayer = true; // IsOwner
+    public bool isLocalPlayer = false; // IsOwner
 
     public bool IsMoving => moveInput.magnitude > 0.1f;
     public bool IsSprinting => isSprinting && (stamina == null || stamina.HasStamina());
@@ -89,9 +89,7 @@ public class CipherController : MonoBehaviour
     #endregion
 
     private void HandleLook()
-    {
-        float deltaTime = Time.deltaTime;
-    
+    {    
         float lookX = lookInput.x * sensitivityX;
         float lookY = lookInput.y * sensitivityY;
     
@@ -141,7 +139,6 @@ public class CipherController : MonoBehaviour
     {
         if (currentWeapon == null) return;
 
-        // Si bouton maintenu
         if (firePressed)
         {
             currentWeapon.TryFire();

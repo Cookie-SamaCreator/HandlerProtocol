@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5994195717821154054}
   - component: {fileID: 1829314617547860009}
   - component: {fileID: -6739932171625043002}
+  - component: {fileID: 8714094272038060146}
   m_Layer: 0
   m_Name: Cipher
   m_TagString: Untagged
@@ -163,8 +164,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  playerCamPrefab: {fileID: 6490902202331186330, guid: a59a9fb133bb43e43820a1bf8c5f7a7f, type: 3}
-  hudPrefab: {fileID: 3035608438782129950, guid: a13631132bf60864d95c54aa818f6e87, type: 3}
 --- !u!114 &-6739932171625043002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,6 +181,39 @@ MonoBehaviour:
   serverOnly: 1
   visibility: 0
   hasSpawned: 0
+--- !u!114 &8714094272038060146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6331411197361015059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f63ea2e505fd484193fb31c5c55ca73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror.Components::Mirror.NetworkTransformHybrid
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0.033333335
+  baselineRate: 1
+  unreliableRedundancy: 0
+  baselineIsDelta: 1
+  debugLog: 0
+  useFixedUpdate: 0
+  target: {fileID: 996419089094914001}
+  bufferSizeLimit: 64
+  sendRate: 30
+  positionSensitivity: 0.01
+  rotationSensitivity: 0.01
+  scaleSensitivity: 0.01
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  debugDraw: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!1 &7115906298721558132
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,12 +15,21 @@ public class NetworkCipherPlayer : NetworkBehaviour
     {
         base.OnStartLocalPlayer();
         cipher.isLocalPlayer = true;
+
+        if (cipher.cameraHolder != null)
+        {
+            cipher.cameraHolder.gameObject.SetActive(true);
+        }
         Debug.Log("Local player started: " + netIdentity.netId);
     }
 
     public override void OnStopLocalPlayer()
     {
         cipher.isLocalPlayer = false;
+        if (cipher.cameraHolder != null)
+        {
+            cipher.cameraHolder.gameObject.SetActive(false);
+        }
     }
 
     public override void OnStopClient()
