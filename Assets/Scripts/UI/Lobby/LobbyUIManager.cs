@@ -192,6 +192,7 @@ public class LobbyUIManager : MonoBehaviour
             }
 
             playerEntries[memberId].SetData(name, avatar, isReady);
+            GameManager.Instance.RegisterPlayer(new PlayerData(name, avatar));
         }
     }
 
@@ -205,7 +206,7 @@ public class LobbyUIManager : MonoBehaviour
             byte[] image = new byte[width * height * 4];
             if (SteamUtils.GetImageRGBA(imageID, image, (int)(width * height * 4)))
             {
-                Texture2D texture = new Texture2D((int)width, (int)height, TextureFormat.RGBA32, false);
+                Texture2D texture = new((int)width, (int)height, TextureFormat.RGBA32, false);
                 texture.LoadRawTextureData(image);
                 texture.Apply();
                 return texture;

@@ -13,6 +13,7 @@ public class Health : MonoBehaviour
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
+        var cipherPlayer = GetComponent<NetworkCipherPlayer>();
         if (currentHealth <= 0f)
         {
             Die();

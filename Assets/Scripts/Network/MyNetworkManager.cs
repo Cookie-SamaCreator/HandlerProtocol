@@ -1,5 +1,7 @@
 using System;
 using Mirror;
+using Mirror.FizzySteam;
+using Steamworks;
 using UnityEngine;
 
 /// <summary>
@@ -12,11 +14,11 @@ public class MyNetworkManager : NetworkManager
     public bool verboseLogging = true;
 
     [Header("Prefabs")]
-    [Tooltip("Optional camera prefab instantiated when a player joins. Can be left null.")]
+    [Tooltip("Optional camera prefab instantiated when a cipher player joins. Can be left null.")]
     [SerializeField]
     private GameObject cipherPlayerCamPrefab;
 
-    [Tooltip("Optional HUD prefab instantiated when a player joins. Can be left null.")]
+    [Tooltip("Optional HUD prefab instantiated when a cipher player joins. Can be left null.")]
     [SerializeField]
     private GameObject cipherHUDPrefab;
 

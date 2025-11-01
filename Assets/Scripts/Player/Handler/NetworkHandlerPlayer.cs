@@ -1,51 +1,37 @@
-using System.Linq;
 using Mirror;
-using Mirror.Examples.MultipleMatch;
-using Steamworks;
 using UnityEngine;
 
-[RequireComponent(typeof(CipherController))]
+[RequireComponent(typeof(HandlerController))]
 [RequireComponent(typeof(Health))]
-public class NetworkCipherPlayer : NetworkBehaviour
+public class NetworkHandlerPlayer : NetworkBehaviour
 {
+    private HandlerController handler;
     public Health health;
-    public PlayerData playerData;
-    private CipherController cipher;
-
+    public string playerName;
     void Awake()
     {
-        cipher = GetComponent<CipherController>();
+        handler = GetComponent<HandlerController>();
         health = GetComponent<Health>();
     }
 
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
-        cipher.isLocalPlayer = true;
+        handler.isLocalPlayer = true;
 
-        if (cipher.cameraHolder != null)
+        if (handler.cameraHolder != null)
         {
-            cipher.cameraHolder.gameObject.SetActive(true);
+            handler.cameraHolder.gameObject.SetActive(true);
         }
-
-        var data = GameManager.Instance.connectedPlayers[SteamFriends.GetPersonaName()];
-
-        if (data == null)
-        {
-            Debug.LogError($"[NetworkCipherPlayer] Player Data not found for {SteamFriends.GetPersonaName()}");
-            return;
-        }
-        playerData = data;
-        
-        Debug.Log("Local player started: " + netIdentity.netId);
+        Debug.Log("Local handler player started: " + netIdentity.netId);
     }
 
     public override void OnStopLocalPlayer()
     {
-        cipher.isLocalPlayer = false;
-        if (cipher.cameraHolder != null)
+        handler.isLocalPlayer = false;
+        if (handler.cameraHolder != null)
         {
-            cipher.cameraHolder.gameObject.SetActive(false);
+            handler.cameraHolder.gameObject.SetActive(false);
         }
     }
 
@@ -54,7 +40,7 @@ public class NetworkCipherPlayer : NetworkBehaviour
         base.OnStopClient();
         if (isLocalPlayer)
         {
-            Debug.Log("Local player stopped.");
+            Debug.Log("Local handler player stopped.");
         }
     }
 
