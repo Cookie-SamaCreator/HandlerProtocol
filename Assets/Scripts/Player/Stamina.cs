@@ -16,12 +16,17 @@ public class Stamina : MonoBehaviour
     private bool isDraining = false;
     private Coroutine regenCoroutine;
 
-    public delegate void OnStaminaChanged(float current, float max);
-    public event OnStaminaChanged onStaminaChanged;
+    public delegate void OnStaminaChangedDelegate(float current, float max);
+    public event OnStaminaChangedDelegate OnStaminaChanged;
 
     private void Awake()
     {
         currentStamina = maxStamina;
+    }
+
+    private void Start()
+    {
+        OnStaminaChanged?.Invoke(currentStamina, maxStamina);
     }
 
     private void Update()
@@ -59,7 +64,7 @@ public class Stamina : MonoBehaviour
         {
             currentStamina -= sprintDrainRate * Time.fixedDeltaTime;
             currentStamina = Mathf.Clamp(currentStamina, 0f, maxStamina);
-            onStaminaChanged?.Invoke(currentStamina, maxStamina);
+            OnStaminaChanged?.Invoke(currentStamina, maxStamina);
         }
     }
 
@@ -71,20 +76,24 @@ public class Stamina : MonoBehaviour
         {
             currentStamina += regenRate * Time.deltaTime;
             currentStamina = Mathf.Clamp(currentStamina, 0f, maxStamina);
-            onStaminaChanged?.Invoke(currentStamina, maxStamina);
+            OnStaminaChanged?.Invoke(currentStamina, maxStamina);
             yield return null;
         }
 
         regenCoroutine = null;
     }
 
-    // 🔹 API : for abilities, buffs, etc.
     public void ModifyMaxStamina(float amount)
     {
         maxStamina += amount;
         maxStamina = Mathf.Max(1f, maxStamina); // avoid 0 or negative
         currentStamina = Mathf.Min(currentStamina, maxStamina);
-        onStaminaChanged?.Invoke(currentStamina, maxStamina);
+        OnStaminaChanged?.Invoke(currentStamina, maxStamina);
+    }
+
+    public void ApplyStaminaBuff(float amount, float duration)
+    {
+        //TODO : Implement this
     }
 
     public void ModifyRegenRate(float multiplier)

@@ -374,6 +374,7 @@ GameObject:
   - component: {fileID: 6951451984331468617}
   - component: {fileID: 4637725617384784456}
   - component: {fileID: 3569719760250910954}
+  - component: {fileID: 111364324439279761}
   - component: {fileID: 6866854402416395116}
   m_Layer: 5
   m_Name: Cipher_HUD_Canvas
@@ -483,6 +484,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StaminaUI
   staminaFill: {fileID: 3203029977696145422}
   staminaText: {fileID: 3086477563801019640}
+--- !u!114 &111364324439279761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3035608438782129950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130108178dc26c7498ed7a027fa8fcf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthUI
+  healthFill: {fileID: 6373645925907208709}
+  healthText: {fileID: 4433112486533030453}
 --- !u!114 &6866854402416395116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -497,6 +512,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CipherHUDController
   playerIcon: {fileID: 1938839325067916650}
   playerName: {fileID: 9176498639164165121}
+  staminaUI: {fileID: 3569719760250910954}
+  healthUI: {fileID: 111364324439279761}
   teamInfoGroup: {fileID: 7044637491195576231}
   teammateInfoPrefab: {fileID: 5521459719530641026, guid: 7148e225a2866754090d8a532a8f9fc6, type: 3}
   crosshair: {fileID: 1525916371814358943}
@@ -937,6 +954,28 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b19b61fce8bc4e4f961d86007c2fc95, type: 3}
+--- !u!114 &4433112486533030453 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 973635756395173681, guid: 1b19b61fce8bc4e4f961d86007c2fc95, type: 3}
+  m_PrefabInstance: {fileID: 3460621444972279044}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &6373645925907208709 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7526964052602089217, guid: 1b19b61fce8bc4e4f961d86007c2fc95, type: 3}
+  m_PrefabInstance: {fileID: 3460621444972279044}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!224 &7884062698122545445 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6732680914740673569, guid: 1b19b61fce8bc4e4f961d86007c2fc95, type: 3}

@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using Mirror;
 using Mirror.FizzySteam;
 using Steamworks;
 using UnityEngine;
 
 /// <summary>
-/// Custom NetworkManager for The Handler Protocol.
+/// Custom NetworkManager for Handler Protocol.
 /// </summary>
 public class MyNetworkManager : NetworkManager
 {
@@ -14,15 +15,16 @@ public class MyNetworkManager : NetworkManager
     public bool verboseLogging = true;
 
     [Header("Prefabs")]
-    [Tooltip("Optional camera prefab instantiated when a cipher player joins. Can be left null.")]
     [SerializeField]
     private GameObject cipherPlayerCamPrefab;
 
-    [Tooltip("Optional HUD prefab instantiated when a cipher player joins. Can be left null.")]
     [SerializeField]
     private GameObject cipherHUDPrefab;
 
     private const string LogPrefix = "[MyNetworkManager]";
+    public static event Action OnAllPlayersSpawned;
+    public int expectedPlayers = 0;
+    private List<GameObject> players;
 
     #region Logging helpers
     private void Log(string message) { if (verboseLogging) Debug.Log($"{LogPrefix} {message}"); }
@@ -108,12 +110,12 @@ public class MyNetworkManager : NetworkManager
         if (!player.TryGetComponent(out CipherController playerCipherController))
         {
             // Not fatal: some players may not have this component depending on prefab layout.
-            LogWarning($"Spawned player (netId: {player.GetComponent<NetworkIdentity>().netId}) has no CipherController component.");
+            LogError($"Spawned player (netId: {player.GetComponent<NetworkIdentity>().netId}) has no CipherController component.");
         }
 
-        if (!player.TryGetComponent(out Stamina playerStamina))
+        if(!player.TryGetComponent(out NetworkCipherPlayer networkCipher))
         {
-            LogWarning($"Spawned player (netId: {player.GetComponent<NetworkIdentity>().netId}) has no Stamina component.");
+            LogError($"Spawned player (netId: {player.GetComponent<NetworkIdentity>().netId}) has no NetworkCipher component.");
         }
 
         // Instantiate and bind camera prefab if provided and player has a CipherController.
@@ -145,20 +147,9 @@ public class MyNetworkManager : NetworkManager
         if (cipherHUDPrefab != null)
         {
             GameObject hud = Instantiate(cipherHUDPrefab);
-            if (hud.TryGetComponent<StaminaUI>(out var staminaUI))
+            if (hud.TryGetComponent<CipherHUDController>(out var cipherHUD))
             {
-                if (playerStamina != null)
-                {
-                    staminaUI.BindPlayer(playerStamina);
-                }
-                else
-                {
-                    LogWarning("StaminaUI found, but spawned player has no Stamina component to bind.");
-                }
-            }
-            else
-            {
-                LogError("StaminaUI not found on HUD prefab!");
+                cipherHUD.BindCipher(playerCipherController, networkCipher);
             }
         }
         else
@@ -169,6 +160,12 @@ public class MyNetworkManager : NetworkManager
         // Final informative log.
         var nid = player.GetComponent<NetworkIdentity>();
         Log($"Player spawned for connection {conn.connectionId} (netId: {nid?.netId})");
+        players.Add(player);
+        if(players.Count == expectedPlayers)
+        {
+            //RpcNotifyAllPlayersReady();
+            OnAllPlayersSpawned?.Invoke();
+        }
     }
 
     /// <summary>
@@ -224,4 +221,10 @@ public class MyNetworkManager : NetworkManager
         Log($"New server connection {conn.connectionId}");
         base.OnServerConnect(conn);
     }
+
+    //[ClientRpc]
+    //private void RpcNotifyAllPlayersReady()
+    //{
+    //    OnAllPlayersSpawned?.Invoke();
+    //}
 }

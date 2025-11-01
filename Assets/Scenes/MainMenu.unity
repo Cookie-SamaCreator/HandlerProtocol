@@ -1448,6 +1448,7 @@ MonoBehaviour:
   readyButton: {fileID: 208612547}
   startGameButton: {fileID: 898523237}
   leaveButton: {fileID: 1241917819}
+  netManager: {fileID: 1422352815}
 --- !u!1 &482707833
 GameObject:
   m_ObjectHideFlags: 0
@@ -2808,6 +2809,7 @@ MonoBehaviour:
   verboseLogging: 1
   cipherPlayerCamPrefab: {fileID: 6490902202331186330, guid: a59a9fb133bb43e43820a1bf8c5f7a7f, type: 3}
   cipherHUDPrefab: {fileID: 3035608438782129950, guid: a13631132bf60864d95c54aa818f6e87, type: 3}
+  expectedPlayers: 0
 --- !u!1 &1533181691
 GameObject:
   m_ObjectHideFlags: 0

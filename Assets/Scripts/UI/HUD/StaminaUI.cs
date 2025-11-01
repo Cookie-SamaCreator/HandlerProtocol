@@ -15,7 +15,7 @@ public class StaminaUI : MonoBehaviour
 
         if (playerStamina != null)
         {
-            playerStamina.onStaminaChanged += UpdateStaminaBar;
+            playerStamina.OnStaminaChanged += UpdateStaminaBar;
             UpdateStaminaBar(playerStamina.currentStamina, playerStamina.maxStamina);
         }
     }
@@ -23,7 +23,7 @@ public class StaminaUI : MonoBehaviour
     private void OnDestroy()
     {
         if (playerStamina != null)
-            playerStamina.onStaminaChanged -= UpdateStaminaBar;
+            playerStamina.OnStaminaChanged -= UpdateStaminaBar;
     }
 
     private void UpdateStaminaBar(float current, float max)

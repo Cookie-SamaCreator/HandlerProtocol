@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(Stamina))]
+[RequireComponent(typeof(Health))]
 public class CipherController : MonoBehaviour
 {
     [Header("Movement")]
@@ -35,7 +36,8 @@ public class CipherController : MonoBehaviour
     private float verticalVelocity;
     private bool isSprinting;
     private bool firePressed;
-    private Stamina stamina;
+    public Stamina stamina;
+    public Health health;
     private PlayerControls controls;
 
     private void Awake()
@@ -43,6 +45,7 @@ public class CipherController : MonoBehaviour
         cc = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         stamina = GetComponent<Stamina>();
+        health = GetComponent<Health>();
         controls = new PlayerControls();
         controls.Cipher.Enable();
     }

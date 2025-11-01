@@ -3,23 +3,28 @@ using UnityEngine.UI;
 using TMPro;
 using Steamworks;
 using System.Collections.Generic;
+using Mirror;
 
 public class LobbyUIManager : MonoBehaviour
 {
     [Header("Main Panel")]
-    public GameObject mainPanel;
-    public Button buttonHost;
-    public Button buttonJoin;
+    [SerializeField] private GameObject mainPanel;
+    [SerializeField] private Button buttonHost;
+    [SerializeField] private Button buttonJoin;
 
     [Header("Lobby Panel")]
-    public GameObject lobbyPanel;
-    public Transform playersContainer;
-    public GameObject playerEntryPrefab;
-    public TMP_Text lobbyStatusText;
+    [SerializeField] private GameObject lobbyPanel;
+    [SerializeField] private Transform playersContainer;
+    [SerializeField] private GameObject playerEntryPrefab;
+    [SerializeField] private TMP_Text lobbyStatusText;
 
-    public Button readyButton;
-    public Button startGameButton;
-    public Button leaveButton;
+    [Header("Lobby Buttons")]
+    [SerializeField] private Button readyButton;
+    [SerializeField] private Button startGameButton;
+    [SerializeField] private Button leaveButton;
+
+    [Header("NetworkManager")]
+    [SerializeField] private MyNetworkManager netManager;
 
     private LobbyController lobbyController;
     private Dictionary<CSteamID, PlayerEntryUI> playerEntries = new();
@@ -194,6 +199,7 @@ public class LobbyUIManager : MonoBehaviour
             playerEntries[memberId].SetData(name, avatar, isReady);
             GameManager.Instance.RegisterPlayer(new PlayerData(name, avatar));
         }
+        netManager.expectedPlayers = memberCount;
     }
 
     private Texture2D GetSteamAvatar(CSteamID steamID)
