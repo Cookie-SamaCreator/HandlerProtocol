@@ -191,6 +191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01f9d2c5c63acb14db8d35353194aa64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CipherController
+  cc: {fileID: 7389244309278751135}
   walkSpeed: 5
   sprintSpeed: 8
   gravity: -9.81
@@ -202,6 +203,8 @@ MonoBehaviour:
   maxPitch: 85
   currentWeapon: {fileID: 7142249516880298432}
   isLocalPlayer: 1
+  stamina: {fileID: 1823239942278711801}
+  health: {fileID: 1035625371086858652}
 --- !u!114 &1035625371086858652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,6 +281,14 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  playerCamPrefab: {fileID: 6490902202331186330, guid: a59a9fb133bb43e43820a1bf8c5f7a7f, type: 3}
+  hudPrefab: {fileID: 3035608438782129950, guid: a13631132bf60864d95c54aa818f6e87, type: 3}
+  cipher: {fileID: 4002613956171042856}
+  playerData:
+    playerName: 
+    avatar: {fileID: 0}
+    selectedCharacterId: 
+    selectedWeapons: []
 --- !u!114 &-6739932171625043002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -292,7 +303,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
   sceneId: 0
   _assetId: 3236781120
-  serverOnly: 1
+  serverOnly: 0
   visibility: 0
   hasSpawned: 0
 --- !u!114 &8714094272038060146

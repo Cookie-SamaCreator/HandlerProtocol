@@ -10,10 +10,13 @@ using System.Collections;
 public class LobbyController : MonoBehaviour
 {
     #region Constants
+    // Lobby keys and options
     private const string READY_KEY = "ready";
     private const string STATE_KEY = "state";
     private const string HOST_KEY = "host";
     private const string GAME_VERSION_KEY = "gameVersion";
+
+    // Scene and state values
     private const string GAME_SCENE_NAME = "PrototypeArena";
     private const string READY_TRUE = "1";
     private const string READY_FALSE = "0";
@@ -21,8 +24,8 @@ public class LobbyController : MonoBehaviour
     private const string LOBBY_STATE_LOBBY = "lobby";
     #endregion
 
-    #region Steam Callbacks
-    // Callbacks must be stored on instance fields to stay alive
+    #region Steam Callback Fields
+    // Steamworks.NET callbacks must be stored on instance fields to remain valid
     private Callback<LobbyCreated_t> lobbyCreatedCallback;
     private Callback<LobbyEnter_t> lobbyEnteredCallback;
     private Callback<GameLobbyJoinRequested_t> lobbyJoinRequestedCallback;
@@ -31,24 +34,28 @@ public class LobbyController : MonoBehaviour
     #endregion
 
     #region Private Fields
+    // Current lobby Steam ID
     private CSteamID currentLobbyID = CSteamID.Nil;
+
+    // Whether this client created the lobby
     private bool isHost = false;
     #endregion
 
-    #region Public Properties
+    #region Public Properties & Events
     /// <summary>
-    /// Indicates if the current client is the host of the lobby
+    /// True when this client is the lobby host
     /// </summary>
     public bool IsHost => isHost;
 
     /// <summary>
-    /// Event triggered when successfully joining a lobby
+    /// Event fired after this client successfully joins a lobby
     /// </summary>
     public delegate void OnLobbyJoinedCallback();
     public event OnLobbyJoinedCallback OnLobbyJoined;
     #endregion
+
     /// <summary>
-    /// Maximum number of players allowed in the lobby
+    /// Maximum number of players allowed in the lobby (editable in inspector)
     /// </summary>
     [SerializeField, Range(2, 32)]
     private int maxMembers = 4;
@@ -59,6 +66,7 @@ public class LobbyController : MonoBehaviour
     /// </summary>
     private void Awake()
     {
+        // Register Steam callbacks early so events are handled during startup
         InitializeSteamCallbacks();
     }
 
@@ -181,7 +189,8 @@ public class LobbyController : MonoBehaviour
     /// </summary>
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
-        if (callback.m_EChatRoomEnterResponse != 1)
+        // Use Steam's chat-room enter response enum for clarity
+        if (callback.m_EChatRoomEnterResponse != (uint)EChatRoomEnterResponse.k_EChatRoomEnterResponseSuccess)
         {
             Debug.LogError($"[LobbyController] Failed to enter lobby: Response code {callback.m_EChatRoomEnterResponse}");
             return;
@@ -189,6 +198,7 @@ public class LobbyController : MonoBehaviour
 
         currentLobbyID = new CSteamID(callback.m_ulSteamIDLobby);
 
+        // If we created the lobby we already did host initialization
         if (isHost)
         {
             Debug.Log("[LobbyController] Host entered own lobby — skipping client initialization");
@@ -197,7 +207,7 @@ public class LobbyController : MonoBehaviour
 
         Debug.Log($"[LobbyController] Successfully entered lobby: {currentLobbyID}");
 
-        // Initialize joining player's ready state
+        // Ensure the joining player's ready state is initialized
         SteamMatchmaking.SetLobbyMemberData(currentLobbyID, READY_KEY, READY_FALSE);
 
         OnLobbyJoined?.Invoke();
@@ -322,25 +332,29 @@ public class LobbyController : MonoBehaviour
 
     private IEnumerator WaitAndChangeScene()
     {
-        // Attends 1 frame complète pour que le client local finisse son spawn
+        // Wait one frame and an end of frame to allow local spawning to complete
         yield return null;
         yield return new WaitForEndOfFrame();
 
-        NetworkManager.singleton.ServerChangeScene(GAME_SCENE_NAME);
+        // Use Mirror to change the server scene (host) which will notify clients
+        if (NetworkManager.singleton != null && NetworkServer.active)
+        {
+            NetworkManager.singleton.ServerChangeScene(GAME_SCENE_NAME);
+        }
     }
-
     private void OnLobbyDataUpdated(LobbyDataUpdate_t data)
     {
-        // Vérifie que c’est bien le lobby actuel
+        // Ignore updates for other lobbies
         if ((CSteamID)data.m_ulSteamIDLobby != currentLobbyID)
             return;
 
-        string state = SteamMatchmaking.GetLobbyData(currentLobbyID, "state");
+        // Read lobby state and react accordingly
+        string state = SteamMatchmaking.GetLobbyData(currentLobbyID, STATE_KEY);
 
-        // Si l'hôte a lancé la partie
-        if (state == "starting" && !isHost)
+        // If the host started the game, non-hosts should connect as clients
+        if (state == LOBBY_STATE_STARTING && !isHost)
         {
-            Debug.Log("Lobby state is 'starting' → launching client connection...");
+            Debug.Log("[LobbyController] Lobby state is 'starting' — launching client connection...");
 
             if (NetworkManager.singleton != null && !NetworkClient.active)
             {
@@ -360,6 +374,7 @@ public class LobbyController : MonoBehaviour
         lobbyEnteredCallback = null;
         lobbyJoinRequestedCallback = null;
         lobbyMatchListCallback = null;
+        lobbyDataUpdatedCallback = null;
     }
 
     public void LeaveCurrentLobby()

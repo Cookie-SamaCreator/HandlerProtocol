@@ -14,13 +14,6 @@ public class MyNetworkManager : NetworkManager
     [Tooltip("Enable verbose debug logging for the custom NetworkManager.")]
     public bool verboseLogging = true;
 
-    [Header("Prefabs")]
-    [SerializeField]
-    private GameObject cipherPlayerCamPrefab;
-
-    [SerializeField]
-    private GameObject cipherHUDPrefab;
-
     private const string LogPrefix = "[MyNetworkManager]";
     public static event Action OnAllPlayersSpawned;
     public int expectedPlayers = 0;
@@ -38,6 +31,7 @@ public class MyNetworkManager : NetworkManager
     public override void OnStartServer()
     {
         base.OnStartServer();
+        players = new List<GameObject>();
         Log("Server started successfully.");
     }
 
@@ -118,49 +112,11 @@ public class MyNetworkManager : NetworkManager
             LogError($"Spawned player (netId: {player.GetComponent<NetworkIdentity>().netId}) has no NetworkCipher component.");
         }
 
-        // Instantiate and bind camera prefab if provided and player has a CipherController.
-        if (cipherPlayerCamPrefab != null)
-        {
-            GameObject cam = Instantiate(cipherPlayerCamPrefab);
-            if (cam.TryGetComponent<CinemachineSprintFX>(out var sprintFX))
-            {
-                if (playerCipherController != null)
-                {
-                    sprintFX.BindCipherPlayer(playerCipherController);
-                }
-                else
-                {
-                    LogWarning("CinemachineSprintFX found, but spawned player has no CipherController to bind.");
-                }
-            }
-            else
-            {
-                LogError("CinemachineSprintFX not found on camera prefab!");
-            }
-        }
-        else
-        {
-            Log("No cipherPlayerCamPrefab assigned; skipping camera instantiation.");
-        }
-
-        // Instantiate and bind HUD prefab if provided and player has a Stamina component.
-        if (cipherHUDPrefab != null)
-        {
-            GameObject hud = Instantiate(cipherHUDPrefab);
-            if (hud.TryGetComponent<CipherHUDController>(out var cipherHUD))
-            {
-                cipherHUD.BindCipher(playerCipherController, networkCipher);
-            }
-        }
-        else
-        {
-            Log("No cipherHUDPrefab assigned; skipping HUD instantiation.");
-        }
-
         // Final informative log.
         var nid = player.GetComponent<NetworkIdentity>();
         Log($"Player spawned for connection {conn.connectionId} (netId: {nid?.netId})");
-        players.Add(player);
+        players ??= new List<GameObject>();
+
         if(players.Count == expectedPlayers)
         {
             //RpcNotifyAllPlayersReady();

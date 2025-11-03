@@ -6,6 +6,9 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Health))]
 public class CipherController : MonoBehaviour
 {
+    [Header("Character Controller")]
+    [SerializeField] private CharacterController cc;
+
     [Header("Movement")]
     public float walkSpeed = 5f;
     public float sprintSpeed = 8f;
@@ -30,7 +33,6 @@ public class CipherController : MonoBehaviour
     public bool IsSprinting => isSprinting && (stamina == null || stamina.HasStamina());
     public bool StaminaAvailable() => stamina == null || stamina.HasStamina();
     
-    private CharacterController cc;
     private Vector2 moveInput;
     private Vector2 lookInput;
     private float verticalVelocity;
@@ -44,8 +46,6 @@ public class CipherController : MonoBehaviour
     {
         cc = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
-        stamina = GetComponent<Stamina>();
-        health = GetComponent<Health>();
         controls = new PlayerControls();
         controls.Cipher.Enable();
     }
