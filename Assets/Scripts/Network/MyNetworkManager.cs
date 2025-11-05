@@ -13,13 +13,12 @@ public class MyNetworkManager : NetworkManager
     [Header("Debug Options")]
     [Tooltip("Enable verbose debug logging for the custom NetworkManager.")]
     public bool verboseLogging = true;
-
-    private const string LogPrefix = "[MyNetworkManager]";
     public static event Action OnAllPlayersSpawned;
     public int expectedPlayers = 0;
     private List<GameObject> players;
 
     #region Logging helpers
+    private const string LogPrefix = "[MyNetworkManager]";
     private void Log(string message) { if (verboseLogging) Debug.Log($"{LogPrefix} {message}"); }
     private void LogWarning(string message) { if (verboseLogging) Debug.LogWarning($"{LogPrefix} {message}"); }
     private void LogError(string message) { Debug.LogError($"{LogPrefix} {message}"); }

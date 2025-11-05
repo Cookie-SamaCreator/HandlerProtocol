@@ -3,12 +3,15 @@ using Steamworks;
 using Mirror;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using Mirror.FizzySteam;
 
 /// <summary>
 /// Manages Steam lobby creation, joining, and player state synchronization
 /// </summary>
 public class LobbyController : MonoBehaviour
 {
+    private static WaitForSeconds _waitForSeconds2 = new WaitForSeconds(2f);
+    private static WaitForSeconds _waitForSeconds1 = new WaitForSeconds(1f);
     #region Constants
     // Lobby keys and options
     private const string READY_KEY = "ready";
@@ -31,6 +34,13 @@ public class LobbyController : MonoBehaviour
     private Callback<GameLobbyJoinRequested_t> lobbyJoinRequestedCallback;
     private Callback<LobbyMatchList_t> lobbyMatchListCallback;
     private Callback<LobbyDataUpdate_t> lobbyDataUpdatedCallback;
+    #endregion
+
+    #region Logging helpers
+    private const string LogPrefix = "[LobbyController]";
+    private void Log(string message) { Debug.Log($"{LogPrefix} {message}"); }
+    private void LogWarning(string message) { Debug.LogWarning($"{LogPrefix} {message}"); }
+    private void LogError(string message) { Debug.LogError($"{LogPrefix} {message}"); }
     #endregion
 
     #region Private Fields
@@ -77,6 +87,12 @@ public class LobbyController : MonoBehaviour
     {
         ValidateSteamInitialization();
     }
+
+    private void Update()
+    {
+        SteamAPI.RunCallbacks();
+    }
+    
     #endregion
 
     #region Initialization Methods
@@ -99,7 +115,7 @@ public class LobbyController : MonoBehaviour
     {
         if (!SteamManager.Initialized)
         {
-            Debug.LogError("Steamworks not initialized! Make sure Steam is running and the app is properly configured.");
+            LogError("Steamworks not initialized! Make sure Steam is running and the app is properly configured.");
             return;
         }
     }
@@ -116,7 +132,7 @@ public class LobbyController : MonoBehaviour
 
         isHost = true;
         SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, maxMembers);
-        Debug.Log("[LobbyController] Creating new lobby...");
+        Log("Creating new lobby...");
     }
 
     /// <summary>
@@ -126,14 +142,14 @@ public class LobbyController : MonoBehaviour
     {
         if (callback.m_eResult != EResult.k_EResultOK)
         {
-            Debug.LogError($"[LobbyController] Failed to create lobby: {callback.m_eResult}");
+            LogError($"Failed to create lobby: {callback.m_eResult}");
             isHost = false;
             return;
         }
 
         isHost = true;
         currentLobbyID = new CSteamID(callback.m_ulSteamIDLobby);
-        Debug.Log($"[LobbyController] Lobby created successfully with ID: {currentLobbyID}");
+        Log($"Lobby created successfully with ID: {currentLobbyID}");
 
         InitializeLobbyData();
         OnLobbyJoined?.Invoke();
@@ -160,7 +176,7 @@ public class LobbyController : MonoBehaviour
     {
         if (!SteamManager.Initialized)
         {
-            Debug.LogError("[LobbyController] Cannot perform lobby operations: Steam is not initialized");
+            LogError("Cannot perform lobby operations: Steam is not initialized");
             return false;
         }
         return true;
@@ -175,13 +191,13 @@ public class LobbyController : MonoBehaviour
         if (!ValidateSteamConnection()) return;
         if (lobbyID == CSteamID.Nil)
         {
-            Debug.LogError("[LobbyController] Cannot join lobby: Invalid lobby ID");
+            LogError("Cannot join lobby: Invalid lobby ID");
             return;
         }
 
         isHost = false;
         SteamMatchmaking.JoinLobby(lobbyID);
-        Debug.Log($"[LobbyController] Attempting to join lobby: {lobbyID}");
+        Log($"Attempting to join lobby: {lobbyID}");
     }
 
     /// <summary>
@@ -192,7 +208,7 @@ public class LobbyController : MonoBehaviour
         // Use Steam's chat-room enter response enum for clarity
         if (callback.m_EChatRoomEnterResponse != (uint)EChatRoomEnterResponse.k_EChatRoomEnterResponseSuccess)
         {
-            Debug.LogError($"[LobbyController] Failed to enter lobby: Response code {callback.m_EChatRoomEnterResponse}");
+            LogError($"Failed to enter lobby: Response code {callback.m_EChatRoomEnterResponse}");
             return;
         }
 
@@ -201,11 +217,11 @@ public class LobbyController : MonoBehaviour
         // If we created the lobby we already did host initialization
         if (isHost)
         {
-            Debug.Log("[LobbyController] Host entered own lobby — skipping client initialization");
+            Log("Host entered own lobby — skipping client initialization");
             return;
         }
 
-        Debug.Log($"[LobbyController] Successfully entered lobby: {currentLobbyID}");
+        Log($"Successfully entered lobby: {currentLobbyID}");
 
         // Ensure the joining player's ready state is initialized
         SteamMatchmaking.SetLobbyMemberData(currentLobbyID, READY_KEY, READY_FALSE);
@@ -218,7 +234,7 @@ public class LobbyController : MonoBehaviour
     /// </summary>
     private void OnGameLobbyJoinRequested(GameLobbyJoinRequested_t callback)
     {
-        Debug.Log($"[LobbyController] Received lobby join request from friend for lobby: {callback.m_steamIDLobby}");
+        Log($"Received lobby join request from friend for lobby: {callback.m_steamIDLobby}");
         JoinLobby(callback.m_steamIDLobby);
     }
 
@@ -227,7 +243,7 @@ public class LobbyController : MonoBehaviour
     /// </summary>
     private void OnLobbyMatchList(LobbyMatchList_t callback)
     {
-        Debug.Log($"[LobbyController] Found {callback.m_nLobbiesMatching} matching lobbies");
+        Log($"Found {callback.m_nLobbiesMatching} matching lobbies");
         // TODO: Implement lobby list handling if needed
     }
 
@@ -245,7 +261,7 @@ public class LobbyController : MonoBehaviour
 
         string readyStatus = ready ? READY_TRUE : READY_FALSE;
         SteamMatchmaking.SetLobbyMemberData(currentLobbyID, READY_KEY, readyStatus);
-        Debug.Log($"[LobbyController] Local player ready status set to: {ready}");
+        Log($"Local player ready status set to: {ready}");
     }
 
     /// <summary>
@@ -257,7 +273,7 @@ public class LobbyController : MonoBehaviour
         if (!ValidateLobbyState("start game")) return;
         if (!AreAllPlayersReady()) return;
 
-        Debug.Log("[LobbyController] All players are ready. Initiating game start sequence...");
+        Log("All players are ready. Initiating game start sequence...");
 
         // Update lobby state
         SteamMatchmaking.SetLobbyData(currentLobbyID, STATE_KEY, LOBBY_STATE_STARTING);
@@ -273,7 +289,7 @@ public class LobbyController : MonoBehaviour
     {
         if (!isHost)
         {
-            Debug.LogWarning("[LobbyController] Only the host can start the game");
+            LogWarning("Only the host can start the game");
             return false;
         }
         return true;
@@ -286,7 +302,7 @@ public class LobbyController : MonoBehaviour
     {
         if (currentLobbyID == CSteamID.Nil)
         {
-            Debug.LogWarning($"[LobbyController] Cannot {operation}: No active lobby");
+            LogWarning($"Cannot {operation}: No active lobby");
             return false;
         }
         return true;
@@ -306,7 +322,7 @@ public class LobbyController : MonoBehaviour
 
             if (readyValue != READY_TRUE)
             {
-                Debug.LogWarning("[LobbyController] Cannot start: Not all players are ready");
+                LogWarning("Cannot start: Not all players are ready");
                 return false;
             }
         }
@@ -354,15 +370,70 @@ public class LobbyController : MonoBehaviour
         // If the host started the game, non-hosts should connect as clients
         if (state == LOBBY_STATE_STARTING && !isHost)
         {
-            Debug.Log("[LobbyController] Lobby state is 'starting' — launching client connection...");
+            Log("Lobby state is 'starting' — launching client connection...");
 
-            if (NetworkManager.singleton != null && !NetworkClient.active)
+            if (NetworkManager.singleton == null)
             {
-                NetworkManager.singleton.StartClient();
+                LogError("No NetworkManager singleton found");
+                return;
             }
+
+            if (NetworkClient.active)
+            {
+                Log("Client already active - skipping");
+                return;
+            }
+
+            string hostIdStr = SteamMatchmaking.GetLobbyData(currentLobbyID, HOST_KEY);
+
+            if (string.IsNullOrEmpty(hostIdStr))
+            {
+                LogError("Host SteamID missing from lobby data!");
+                return;
+            }
+
+            if (!ulong.TryParse(hostIdStr, out ulong hostIdULong))
+            {
+                LogError($"Invalid Host SteamID : {hostIdStr}");
+                return;
+            }
+
+            var fizzy = Transport.active as FizzySteamworks;
+
+            if (fizzy == null)
+            {
+                LogError("Active transport is not FizzySteamworks.");
+                return;
+            }
+
+            Log($"Attempting to connect to host SteamID : {hostIdStr}");
+
+            StartCoroutine(WaitThenConnect(hostIdStr));
         }
     }
 
+    private IEnumerator WaitThenConnect(string hostIdStr)
+    {
+        var fizzy = Transport.active as FizzySteamworks;
+        if (fizzy == null)
+        {
+            LogError("Transport not FizzySteamworks!");
+            yield break;
+        }
+
+        yield return _waitForSeconds1;
+        Log("Trying first connection attempt...");
+        fizzy.ClientConnect(hostIdStr);
+
+        // attendre 2 secondes pour voir si la connexion s’établit
+        yield return _waitForSeconds2;
+
+        if (!NetworkClient.active)
+        {
+            LogWarning("Connection not established yet — retrying once.");
+            fizzy.ClientConnect(hostIdStr);
+        }
+    }
 
     #endregion
 
@@ -382,7 +453,7 @@ public class LobbyController : MonoBehaviour
         if (currentLobbyID != CSteamID.Nil)
         {
             SteamMatchmaking.LeaveLobby(currentLobbyID);
-            Debug.Log($"Left lobby {currentLobbyID}");
+            Log($"Left lobby {currentLobbyID}");
             currentLobbyID = CSteamID.Nil;
         }
 

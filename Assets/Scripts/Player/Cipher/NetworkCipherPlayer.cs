@@ -15,7 +15,15 @@ public class NetworkCipherPlayer : NetworkBehaviour
     #endregion
 
     #region Cached Components
+    [Header("Cipher Controller")]
     [SerializeField] private CipherController cipher;
+    #endregion
+
+    #region SyncVars
+    [SyncVar] public string CipherID;
+    [SyncVar(hook = nameof(OnLoadoutChanged))] public string LoadoutJson;
+
+    public CipherLoadout CurrentLoadout { get; private set; }
     #endregion
 
     #region Runtime State
@@ -66,6 +74,9 @@ public class NetworkCipherPlayer : NetworkBehaviour
         playerData = data;
         SetupCameraAndHUD();
 
+        var localLoadout = FindFirstObjectByType<PlayerInventory>().GetLoadoutFor(CipherID);
+        CmdSetLoadout(JsonUtility.ToJson(localLoadout));
+        
         Debug.Log($"[NetworkCipherPlayer] Local player started: {netIdentity.netId}");
     }
     
@@ -176,6 +187,24 @@ public class NetworkCipherPlayer : NetworkBehaviour
             playerData = data;
             SetupCameraAndHUD();
         }
+    }
+
+    [Command]
+    private void CmdSetLoadout(string json)
+    {
+        LoadoutJson = json;
+    }
+
+    private void OnLoadoutChanged(string _, string newJson)
+    {
+        CurrentLoadout = JsonUtility.FromJson<CipherLoadout>(newJson);
+        ApplyLoadout();
+    }
+
+    private void ApplyLoadout()
+    {
+        // instancier armes, compétences, etc. dans CipherController
+        GetComponent<CipherController>().SetupLoadout(CurrentLoadout);
     }
 
     #region Unity Lifecycle Helpers

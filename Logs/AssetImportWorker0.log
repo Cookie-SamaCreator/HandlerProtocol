@@ -1,9 +1,9 @@
 [Licensing::Module] Trying to connect to existing licensing client channel...
 Built from '6000.2/respin/6000.2.6f2-cc51a95c03' branch; Version is '6000.2.6f2 (4a4dcaec6541) revision 4869578'; Using compiler version '194234433'; Build Type 'Release'
-[Licensing::IpcConnector] Successfully connected to: "LicenseClient-virgi" at "2025-11-03T21:58:59.2816596Z"
 OS: 'Windows 11  (10.0.26200) 64bit Core' Language: 'fr' Physical Memory: 7971 MB
 BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
-Date: 2025-11-03T21:58:59Z
+Date: 2025-11-05T18:26:16Z
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-virgi" at "2025-11-05T18:26:16.6311808Z"
 
 COMMAND LINE ARGUMENTS:
 C:\Program Files\Unity\Hub\Editor\6000.2.6f2\Editor\Unity.exe
@@ -17,7 +17,7 @@ C:/Users/virgi/OneDrive/Documents/GameDev/HandlerProtocol/HandlerProtocol/Handle
 -logFile
 Logs/AssetImportWorker0.log
 -srvPort
-54927
+54544
 -licensingIpc
 LicenseClient-virgi
 -job-worker-count
@@ -65,27 +65,27 @@ C:/Users/virgi/OneDrive/Documents/GameDev/HandlerProtocol/HandlerProtocol/Handle
     "memorysetup-temp-allocator-size-gi-baking-worker=262144"
     "memorysetup-temp-allocator-size-gi-baking-worker=262144"
     "memorysetup-temp-allocator-size-gfx=262144"
-Player connection [17224]  Target information:
+Player connection [536]  Target information:
 
-Player connection [17224]  * "[IP] 192.168.1.22 [Port] 0 [Flags] 2 [Guid] 1535811472 [EditorId] 1535811472 [Version] 1048832 [Id] WindowsEditor(7,LAPTOP-VNBPJJF4) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+Player connection [536]  * "[IP] 192.168.1.22 [Port] 0 [Flags] 2 [Guid] 558457447 [EditorId] 558457447 [Version] 1048832 [Id] WindowsEditor(7,LAPTOP-VNBPJJF4) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
 
-Player connection [17224] Host joined multi-casting on [225.0.0.222:54997]...
-Player connection [17224] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Player connection [536] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [536] Host joined alternative multi-casting on [225.0.0.222:34997]...
 JobSystem: Creating JobQueue using job-worker-count value 1
 Input System module state changed to: Initialized.
-[Physics::Module] Initialized fallback backend.
-[Physics::Module] Id: 0xdecafbad
-[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 7720, path: "C:/Program Files/Unity Hub/UnityLicensingClient_V1/Unity.Licensing.Client.exe")
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 8612, path: "C:/Program Files/Unity Hub/UnityLicensingClient_V1/Unity.Licensing.Client.exe")
 [Licensing::Module] LicensingClient has failed validation; ignoring
 [Licensing::Client] Handshaking with LicensingClient:
   Version:                 1.17.3+a4e98f1
-  Session Id:              2540732a648d47c8a45be6cce45b3cc5
-  Correlation Id:          dec445b40edccdc0ce7fa0ecce59af49
-  External correlation Id: 5605334706008370649
+  Session Id:              e7706cfb214647efb86a448517a029a5
+  Correlation Id:          cc03b9f87d3314e269fadb36f75544b3
+  External correlation Id: 7796028908672717097
   Machine Id:              ilRO6wMu3Q//7prMkEfLaEaRqG4=
-[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-virgi" (connect: 0.00s, validation: 0.00s, handshake: 0.08s)
-[Licensing::IpcConnector] Successfully connected to: "LicenseClient-virgi-notifications" at "2025-11-03T21:58:59.3625834Z"
-[Licensing::Module] Licensing Background thread has ended after 0.08s
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-virgi" (connect: 0.01s, validation: 0.02s, handshake: 0.78s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-virgi-notifications" at "2025-11-05T18:26:17.4381873Z"
+[Licensing::Module] Licensing Background thread has ended after 0.81s
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
 Library Redirect Path: Library/
 [Physics::Module] Selected backend.
 [Physics::Module] Name: PhysX
@@ -93,8 +93,8 @@ Library Redirect Path: Library/
 [Physics::Module] SDK Version: 4.1.2
 [Physics::Module] Integration Version: 1.0.0
 [Physics::Module] Threading Mode: Multi-Threaded
-Refreshing native plugins compatible for Editor in 18.23 ms, found 4 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
+Refreshing native plugins compatible for Editor in 614.70 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 8.73 ms.
 Initialize engine version: 6000.2.6f2 (4a4dcaec6541)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.2.6f2/Editor/Data/Resources/UnitySubsystems
 [Subsystems] Discovering subsystems at path C:/Users/virgi/OneDrive/Documents/GameDev/HandlerProtocol/HandlerProtocol/HandlerProtocol/Assets
@@ -113,7 +113,7 @@ Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.2.6f2/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.2.6f2/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.2.6f2/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56492
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56620
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.2.6f2/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
@@ -124,41 +124,41 @@ Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.2.6f2/E
   Type: Assigned
   Expiration: Unlimited
 Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.2.6f2/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
-Registered in 0.022335 seconds.
-- Loaded All Assemblies, in  1.722 seconds
+Registered in 0.016906 seconds.
+- Loaded All Assemblies, in  7.158 seconds
 Native extension for Android target not found
-Android Extension - Scanning For ADB Devices 419 ms
+Android Extension - Scanning For ADB Devices 973 ms
 Native extension for WindowsStandalone target not found
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  1.063 seconds
-Domain Reload Profiling: 2687ms
-	BeginReloadAssembly (463ms)
+- Finished resetting the current domain, in  2.547 seconds
+Domain Reload Profiling: 9703ms
+	BeginReloadAssembly (1387ms)
 		ExecutionOrderSort (0ms)
 		DisableScriptedObjects (0ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (1ms)
-	RebuildCommonClasses (103ms)
-	RebuildNativeTypeToScriptingClass (98ms)
-	initialDomainReloadingComplete (677ms)
-	LoadAllAssembliesAndSetupDomain (282ms)
-		LoadAssemblies (462ms)
+		CreateAndSetChildDomain (2ms)
+	RebuildCommonClasses (1378ms)
+	RebuildNativeTypeToScriptingClass (43ms)
+	initialDomainReloadingComplete (157ms)
+	LoadAllAssembliesAndSetupDomain (4189ms)
+		LoadAssemblies (1384ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (274ms)
-			TypeCache.Refresh (271ms)
-				TypeCache.ScanAssembly (250ms)
+		AnalyzeDomain (4182ms)
+			TypeCache.Refresh (4179ms)
+				TypeCache.ScanAssembly (2856ms)
 			BuildScriptInfoCaches (0ms)
 			ResolveRequiredComponents (1ms)
-	FinalizeReload (1064ms)
+	FinalizeReload (2549ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (1012ms)
+		SetupLoadedEditorAssemblies (2459ms)
 			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (585ms)
-			SetLoadedEditorAssemblies (6ms)
-			BeforeProcessingInitializeOnLoad (120ms)
-			ProcessInitializeOnLoadAttributes (207ms)
-			ProcessInitializeOnLoadMethodAttributes (94ms)
+			InitializePlatformSupportModulesInManaged (1167ms)
+			SetLoadedEditorAssemblies (12ms)
+			BeforeProcessingInitializeOnLoad (183ms)
+			ProcessInitializeOnLoadAttributes (994ms)
+			ProcessInitializeOnLoadMethodAttributes (102ms)
 			AfterProcessingInitializeOnLoad (0ms)
 			EditorAssembliesLoaded (0ms)
 		ExecutionOrderSort2 (0ms)
@@ -172,11 +172,11 @@ Assembly reference Packages/com.unity.cinemachine/Editor/Samples/ExposeHDRPInter
 Begin MonoManager ReloadAssembly
 [Licensing::Client] Successfully resolved entitlement details
 Symbol file LoadedFromMemory is not a mono symbol file
-- Loaded All Assemblies, in  1.920 seconds
+- Loaded All Assemblies, in  8.011 seconds
 Assembly reference Packages/com.unity.cinemachine/Editor/Samples/ExposeHDRPInternals/HDRP-Editor-ref.asmref has no target assembly definition
 'Packages/com.unity.cinemachine/Editor/Obsolete/CinemachineVirtualCameraBaseEditor.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
 'Packages/com.unity.cinemachine/Editor/Editors/CinemachineVirtualCameraBaseEditor.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
-Refreshing native plugins compatible for Editor in 3.09 ms, found 4 plugins.
+Refreshing native plugins compatible for Editor in 3.65 ms, found 4 plugins.
 Native extension for Android target not found
 Native extension for WindowsStandalone target not found
 Assembly reference Packages/com.unity.cinemachine/Editor/Samples/ExposeHDRPInternals/HDRP-Editor-ref.asmref has no target assembly definition
@@ -189,52 +189,108 @@ Package Manager log level set to [2]
 [Package Manager] Cannot connect to Unity Package Manager local server
 Mirror | mirror-networking.com | discord.gg/N9QVxbM
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  1.520 seconds
-Domain Reload Profiling: 3433ms
-	BeginReloadAssembly (381ms)
+- Finished resetting the current domain, in  3.446 seconds
+Domain Reload Profiling: 11446ms
+	BeginReloadAssembly (569ms)
 		ExecutionOrderSort (0ms)
-		DisableScriptedObjects (35ms)
+		DisableScriptedObjects (43ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (52ms)
-	RebuildCommonClasses (62ms)
+		CreateAndSetChildDomain (74ms)
+	RebuildCommonClasses (124ms)
 	RebuildNativeTypeToScriptingClass (21ms)
-	initialDomainReloadingComplete (70ms)
-	LoadAllAssembliesAndSetupDomain (1379ms)
-		LoadAssemblies (913ms)
+	initialDomainReloadingComplete (94ms)
+	LoadAllAssembliesAndSetupDomain (7191ms)
+		LoadAssemblies (6175ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (662ms)
-			TypeCache.Refresh (454ms)
-				TypeCache.ScanAssembly (415ms)
-			BuildScriptInfoCaches (171ms)
-			ResolveRequiredComponents (30ms)
-	FinalizeReload (1520ms)
+		AnalyzeDomain (1317ms)
+			TypeCache.Refresh (1136ms)
+				TypeCache.ScanAssembly (1103ms)
+			BuildScriptInfoCaches (141ms)
+			ResolveRequiredComponents (29ms)
+	FinalizeReload (3447ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (1095ms)
+		SetupLoadedEditorAssemblies (1380ms)
 			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (17ms)
-			SetLoadedEditorAssemblies (5ms)
-			BeforeProcessingInitializeOnLoad (225ms)
-			ProcessInitializeOnLoadAttributes (766ms)
-			ProcessInitializeOnLoadMethodAttributes (76ms)
-			AfterProcessingInitializeOnLoad (6ms)
-			EditorAssembliesLoaded (0ms)
+			InitializePlatformSupportModulesInManaged (31ms)
+			SetLoadedEditorAssemblies (7ms)
+			BeforeProcessingInitializeOnLoad (383ms)
+			ProcessInitializeOnLoadAttributes (813ms)
+			ProcessInitializeOnLoadMethodAttributes (138ms)
+			AfterProcessingInitializeOnLoad (8ms)
+			EditorAssembliesLoaded (1ms)
 		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (8ms)
-Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
-Refreshing native plugins compatible for Editor in 4.23 ms, found 4 plugins.
+		AwakeInstancesAfterBackupRestoration (10ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 1.01 seconds
+Refreshing native plugins compatible for Editor in 579.82 ms, found 4 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Unloading 15 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 7193 unused Assets / (3.9 MB). Loaded Objects now: 7895.
-Memory consumption went from 136.2 MB to 132.3 MB.
-Total: 16.792600 ms (FindLiveObjects: 1.053800 ms CreateObjectMapping: 2.363800 ms MarkObjects: 8.450400 ms  DeleteObjects: 4.922300 ms)
+Unloading 7193 unused Assets / (4.3 MB). Loaded Objects now: 7895.
+Memory consumption went from 136.6 MB to 132.3 MB.
+Total: 77.218500 ms (FindLiveObjects: 6.326300 ms CreateObjectMapping: 6.112800 ms MarkObjects: 49.192100 ms  DeleteObjects: 15.576400 ms)
+
+========================================================================
+Received Prepare
+'Packages/com.unity.cinemachine/Editor/Obsolete/CinemachineVirtualCameraBaseEditor.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+'Packages/com.unity.cinemachine/Editor/Editors/CinemachineVirtualCameraBaseEditor.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+Refreshing native plugins compatible for Editor in 9.95 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 15 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 7178 unused Assets / (4.4 MB). Loaded Objects now: 7896.
+Memory consumption went from 137.0 MB to 132.6 MB.
+Total: 40.891500 ms (FindLiveObjects: 0.940600 ms CreateObjectMapping: 2.425700 ms MarkObjects: 14.574200 ms  DeleteObjects: 22.947800 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+========================================================================
+Received Import Request.
+  Time since last request: 268059.317506 seconds.
+  path: Assets/Scripts/UI/HUD/TeamMateInfoUI.cs
+  artifactKey: Guid(86ec7b260f4334b4697f494867901dba) Importer(2089858483,192608db42251d675da83286b1cce702)
+Start importing Assets/Scripts/UI/HUD/TeamMateInfoUI.cs using Guid(86ec7b260f4334b4697f494867901dba) Importer(2089858483,192608db42251d675da83286b1cce702) (ScriptedImporter) -> (artifact id: '0d35392f3f3a40dcdd6aef3ee28d0c26') in 4.2914076 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 0
 
 ========================================================================
 Received Import Request.
-  Time since last request: 107936.578796 seconds.
-  path: Assets/Mirror/Examples/Mirror.Examples.asmdef
-  artifactKey: Guid(fecf25954bb196642ab50657689761d6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Mirror/Examples/Mirror.Examples.asmdef using Guid(fecf25954bb196642ab50657689761d6) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'f9823d9d3140df54af3fc9e7d905a836') in 0.0169203 seconds
+  Time since last request: 0.000086 seconds.
+  path: Assets/Scripts/UI/Lobby/LobbyUIManager.cs
+  artifactKey: Guid(21deb4677af7e2b42999407cf347c567) Importer(2089858483,192608db42251d675da83286b1cce702)
+Start importing Assets/Scripts/UI/Lobby/LobbyUIManager.cs using Guid(21deb4677af7e2b42999407cf347c567) Importer(2089858483,192608db42251d675da83286b1cce702) (ScriptedImporter) -> (artifact id: '55ccc7e4cd39ef7a456c480516d47aa0') in 0.0576264 seconds
 Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 0
 
+========================================================================
+Received Import Request.
+  Time since last request: 0.000043 seconds.
+  path: Assets/Scripts/ScriptableObjects/Player/CIpher/CipherLoadout.cs
+  artifactKey: Guid(547b8f1517131834fbea721be023be61) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/ScriptableObjects/Player/CIpher/CipherLoadout.cs using Guid(547b8f1517131834fbea721be023be61) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '00000000000000000000000000000000') in 0.0054623 seconds
+Import Error Code:(4)
+Message: Build asset version error: assets/scripts/scriptableobjects/player/cipher/cipherloadout.cs in SourceAssetDB has modification time of '2025-11-05T18:26:50.2557404Z' while content on disk has modification time of '2025-11-05T18:27:36.448965Z'
+  ERROR: Build asset version error: assets/scripts/scriptableobjects/player/cipher/cipherloadout.cs in SourceAssetDB has modification time of '2025-11-05T18:26:50.2557404Z' while content on disk has modification time of '2025-11-05T18:27:36.448965Z'
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 0
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000091 seconds.
+  path: Assets/Scripts/UI/SceneManagement/LobbyController.cs
+  artifactKey: Guid(d19567877ddde03499828eacd1d50e72) Importer(2089858483,192608db42251d675da83286b1cce702)
+Start importing Assets/Scripts/UI/SceneManagement/LobbyController.cs using Guid(d19567877ddde03499828eacd1d50e72) Importer(2089858483,192608db42251d675da83286b1cce702) (ScriptedImporter) -> (artifact id: '7cc6fd4b604bd187ac99fad5184dacac') in 0.0622105 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 0
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000203 seconds.
+  path: Assets/Scripts/ScriptableObjects/Player/CIpher/CipherLoadout.cs
+  artifactKey: Guid(547b8f1517131834fbea721be023be61) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/ScriptableObjects/Player/CIpher/CipherLoadout.cs using Guid(547b8f1517131834fbea721be023be61) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '00000000000000000000000000000000') in 0.0016144 seconds
+Import Error Code:(4)
+Message: Build asset version error: assets/scripts/scriptableobjects/player/cipher/cipherloadout.cs in SourceAssetDB has modification time of '2025-11-05T18:26:50.2557404Z' while content on disk has modification time of '2025-11-05T18:27:36.448965Z'
+  ERROR: Build asset version error: assets/scripts/scriptableobjects/player/cipher/cipherloadout.cs in SourceAssetDB has modification time of '2025-11-05T18:26:50.2557404Z' while content on disk has modification time of '2025-11-05T18:27:36.448965Z'
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 0
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000084 seconds.
+  path: Assets/Prefabs/Player/Cipher.prefab
+  artifactKey: Guid(583e8ef732e97e742ab616a37456b145) Importer(2089858483,192608db42251d675da83286b1cce702)
+Start importing Assets/Prefabs/Player/Cipher.prefab using Guid(583e8ef732e97e742ab616a37456b145) Importer(2089858483,192608db42251d675da83286b1cce702) (ScriptedImporter)

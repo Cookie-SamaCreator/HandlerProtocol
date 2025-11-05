@@ -13,7 +13,7 @@ public class Health : MonoBehaviour
         currentHealth = maxHealth;
     }
 
-    public void TakeDamage(float amount)
+    public void TakeDamage(float amount, GameObject damageDealer)
     {
         currentHealth -= amount;
         OnHealthChanged?.Invoke(currentHealth, maxHealth);

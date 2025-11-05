@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,6 +9,11 @@ public class CipherController : MonoBehaviour
 {
     [Header("Character Controller")]
     [SerializeField] private CharacterController cc;
+
+    [Header("Weapon Slots")]
+    [SerializeField] Transform firstPrimaryWeaponSlot;
+    [SerializeField] Transform secondPrimaryWeaponSlot;
+    [SerializeField] Transform secondaryWeaponSlot;
 
     [Header("Movement")]
     public float walkSpeed = 5f;
@@ -23,8 +29,12 @@ public class CipherController : MonoBehaviour
     public float maxPitch = 85f;
     private float cameraPitch = 0f;
 
-    [Space]
-    public Weapon currentWeapon;
+    [Header("Player Inventory")]
+    public Weapon currentActiveWeapon;
+    public Weapon currentFirstPrimary;
+    public Weapon currentSecondPrimary;
+    public Weapon currentSecondary;
+    public List<SkillDefinition> CurrentSkills = new();
 
     [Header("Network Simulation")]
     public bool isLocalPlayer = false; // IsOwner
@@ -38,6 +48,7 @@ public class CipherController : MonoBehaviour
     private float verticalVelocity;
     private bool isSprinting;
     private bool firePressed;
+    private bool wasFirePressed = false;
     public Stamina stamina;
     public Health health;
     private PlayerControls controls;
@@ -107,7 +118,6 @@ public class CipherController : MonoBehaviour
         }
     }
 
-
     private void HandleMovement()
     {
         Vector3 input = new(moveInput.x, 0f, moveInput.y);
@@ -140,12 +150,39 @@ public class CipherController : MonoBehaviour
 
     private void HandleFire()
     {
-        if (currentWeapon == null) return;
+        if (currentActiveWeapon == null) return;
 
-        if (firePressed)
+        bool newPress = firePressed && !wasFirePressed;
+
+        currentActiveWeapon.TryFire(firePressed, newPress);
+
+        wasFirePressed = firePressed;
+        
+    }
+
+    public void SetupLoadout(CipherLoadout loadout)
+    {
+        // Récupérer les definitions depuis un registry global
+        var firstPrimaryDef = WeaponDatabase.Get(loadout.FirstPrimaryWeaponID);
+        var weapon = Instantiate(firstPrimaryDef.WeaponModelPrefab, firstPrimaryWeaponSlot);
+        currentFirstPrimary = weapon.GetComponent<Weapon>();
+        currentActiveWeapon = currentFirstPrimary;
+
+        var secondPrimaryDef = WeaponDatabase.Get(loadout.SecondPrimaryWeaponID);
+        weapon = Instantiate(secondPrimaryDef.WeaponModelPrefab, secondPrimaryWeaponSlot);
+        currentSecondPrimary = weapon.GetComponent<Weapon>();
+
+        var secondaryDef = WeaponDatabase.Get(loadout.SecondaryWeaponID);
+        weapon = Instantiate(secondaryDef.WeaponModelPrefab, secondaryWeaponSlot);
+        currentSecondary = weapon.GetComponent<Weapon>();
+
+        CurrentSkills.Clear();
+        foreach (var skillID in loadout.SkillIDs)
         {
-            currentWeapon.TryFire();
+            var skillDef = SkillDatabase.Get(skillID);
+            //CurrentSkills.Add(Instantiate(skillDef.Prefab, skillContainer));
         }
+
     }
 
     public void SetSensitivity(float x, float y)
