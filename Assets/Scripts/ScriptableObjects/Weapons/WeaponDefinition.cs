@@ -21,7 +21,6 @@ public class WeaponDefinition : ScriptableObject
     public GameObject WeaponModelPrefab;
     public GameObject MuzzleFlashPrefab;
     public Projectile ProjectilePrefab;
-    public Transform FirePointOffset;
 
     [Header("Audio")]
     public AudioClip FireSound;

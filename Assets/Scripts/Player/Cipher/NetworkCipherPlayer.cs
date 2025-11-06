@@ -8,10 +8,14 @@ using UnityEngine;
 [RequireComponent(typeof(CipherController))]
 public class NetworkCipherPlayer : NetworkBehaviour
 {
+    private static WaitForSeconds _waitForSeconds0_5 = new WaitForSeconds(0.5f);
     #region Serialized Fields
     [Header("Local Player Prefabs")]
     [SerializeField] private GameObject playerCamPrefab;
     [SerializeField] private GameObject hudPrefab;
+
+    [Header("Cipher Model")]
+    [SerializeField] private Transform cipherModel;
     #endregion
 
     #region Cached Components
@@ -20,7 +24,7 @@ public class NetworkCipherPlayer : NetworkBehaviour
     #endregion
 
     #region SyncVars
-    [SyncVar] public string CipherID;
+    [SyncVar] public string CipherID = "CipherOne";
     [SyncVar(hook = nameof(OnLoadoutChanged))] public string LoadoutJson;
 
     public CipherLoadout CurrentLoadout { get; private set; }
@@ -74,8 +78,14 @@ public class NetworkCipherPlayer : NetworkBehaviour
         playerData = data;
         SetupCameraAndHUD();
 
-        var localLoadout = FindFirstObjectByType<PlayerInventory>().GetLoadoutFor(CipherID);
+        Debug.Log("[NetworkCipherPlayer] Getting LocalLoadout");
+        var localLoadout = PlayerInventory.Instance.GetLoadoutFor(CipherID);
+        Debug.Log($"[NetworkCipherPlayer] Local Loadout = : {localLoadout.CipherID}");
         CmdSetLoadout(JsonUtility.ToJson(localLoadout));
+        Debug.Log("[NetworkCipherPlayer] Local Loadout cmd done");
+
+        // Start coroutine to spawn the cipher model after a short delay
+        StartCoroutine(WaitAndSpawnCipher());
         
         Debug.Log($"[NetworkCipherPlayer] Local player started: {netIdentity.netId}");
     }
@@ -193,10 +203,12 @@ public class NetworkCipherPlayer : NetworkBehaviour
     private void CmdSetLoadout(string json)
     {
         LoadoutJson = json;
+        Debug.Log($"[NetworkCipherPlayer] cmd loadout");
     }
 
     private void OnLoadoutChanged(string _, string newJson)
     {
+        Debug.Log($"[NetworkCipherPlayer] onLoadout changed");
         CurrentLoadout = JsonUtility.FromJson<CipherLoadout>(newJson);
         ApplyLoadout();
     }
@@ -204,6 +216,7 @@ public class NetworkCipherPlayer : NetworkBehaviour
     private void ApplyLoadout()
     {
         // instancier armes, compétences, etc. dans CipherController
+        Debug.Log("[NetworkCipherPlayer] ApplyLoadout");
         GetComponent<CipherController>().SetupLoadout(CurrentLoadout);
     }
 
@@ -215,4 +228,54 @@ public class NetworkCipherPlayer : NetworkBehaviour
             cipher = GetComponent<CipherController>();
     }
     #endregion
+
+    /// <summary>
+    /// Waits a short delay to ensure loadout is applied, then finds the CipherDefinition
+    /// and instantiates its prefab under the provided `cipherModel` parent.
+    /// This runs on the client and creates a local visual representation only.
+    /// </summary>
+    private IEnumerator WaitAndSpawnCipher()
+    {
+        // Small delay to allow server/client sync of SyncVars and loadout application
+        yield return _waitForSeconds0_5;
+
+        // Prefer the server-synced CurrentLoadout if available
+        CipherLoadout loadoutToUse = CurrentLoadout;
+
+        // If CurrentLoadout hasn't arrived yet, try to fetch from local inventory
+        if (loadoutToUse == null && PlayerInventory.Instance != null)
+        {
+            loadoutToUse = PlayerInventory.Instance.GetLoadoutFor(CipherID);
+            if (loadoutToUse == null)
+            {
+                // Try to generate or get a loadout from the definition as a fallback
+                var def = PlayerInventory.Instance.GetCipherDefinition(CipherID);
+                if (def != null)
+                    loadoutToUse = PlayerInventory.Instance.GetOrGenerateLoadout(def);
+            }
+        }
+
+        if (loadoutToUse == null)
+        {
+            Debug.LogWarning("[NetworkCipherPlayer] No loadout available to spawn cipher model.");
+            yield break;
+        }
+
+        var cipherDef = PlayerInventory.Instance.GetCipherDefinition(loadoutToUse.CipherID);
+        if (cipherDef == null)
+        {
+            Debug.LogWarning($"[NetworkCipherPlayer] CipherDefinition not found for id '{loadoutToUse.CipherID}'");
+            yield break;
+        }
+
+        if (cipherDef.CipherPrefab != null && cipherModel != null)
+        {
+            Instantiate(cipherDef.CipherPrefab, cipherModel);
+            Debug.Log($"[NetworkCipherPlayer] Spawned cipher prefab for {cipherDef.CipherID}");
+        }
+        else
+        {
+            Debug.LogWarning("[NetworkCipherPlayer] Cipher prefab or model parent is null");
+        }
+    }
 }

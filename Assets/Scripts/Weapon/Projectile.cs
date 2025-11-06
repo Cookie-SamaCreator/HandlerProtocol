@@ -18,7 +18,10 @@ public class Projectile : NetworkBehaviour
 
     private void Update()
     {
-        transform.position += speed * Time.deltaTime * transform.forward;
+        if (isServer)
+        {
+            transform.position += speed * Time.deltaTime * transform.forward;
+        }
     }
 
     [ServerCallback]

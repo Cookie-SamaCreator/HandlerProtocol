@@ -11,7 +11,7 @@ public class TeamMateInfoUI : MonoBehaviour
     public void BindPlayer(CipherController cipher, NetworkCipherPlayer networkCipher)
     {
         playerName.text = networkCipher.playerData.playerName;
-        playerHealth.BindPlayer(cipher.health);
+        playerHealth.BindPlayer(cipher.healthSystem);
         //TODO : Implement player icon   
     }
 }

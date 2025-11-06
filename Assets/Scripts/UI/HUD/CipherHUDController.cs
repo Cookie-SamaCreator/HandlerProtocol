@@ -42,8 +42,8 @@ public class CipherHUDController : MonoBehaviour
     {
         if (currentCipher == null || currentNetworkCipher == null) { return; }
 
-        staminaUI.BindPlayer(currentCipher.stamina);
-        healthUI.BindPlayer(currentCipher.health);
+        staminaUI.BindPlayer(currentCipher.staminaSystem);
+        healthUI.BindPlayer(currentCipher.healthSystem);
         playerName.text = currentNetworkCipher.playerData.playerName;
         var playerList = GameManager.Instance.connectedPlayers;
         foreach(var player in playerList)
