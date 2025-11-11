@@ -21,5 +21,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0517484c5cb4cd24b8c331699fc89843, type: 2}
   PrimaryWeapons:
   - {fileID: 11400000, guid: 468cd65844e097f43bd1ef4ffd6e5d50, type: 2}
-  SecondaryWeapons: []
+  - {fileID: 11400000, guid: 0320d65bd57a2704da50264444b99c51, type: 2}
+  SecondaryWeapons:
+  - {fileID: 11400000, guid: 0517484c5cb4cd24b8c331699fc89843, type: 2}
   AvailableSkills: []

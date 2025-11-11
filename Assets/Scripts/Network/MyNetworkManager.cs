@@ -4,18 +4,24 @@ using Mirror;
 using Mirror.FizzySteam;
 using Steamworks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Custom NetworkManager for Handler Protocol.
 /// </summary>
 public class MyNetworkManager : NetworkManager
 {
+    [Header("Player Prefabs")]
+    public GameObject CipherPlayerPrefab;
+    public GameObject PlayerEntryUIPrefab;
+
     [Header("Debug Options")]
     [Tooltip("Enable verbose debug logging for the custom NetworkManager.")]
     public bool verboseLogging = true;
     public static event Action OnAllPlayersSpawned;
     public int expectedPlayers = 0;
-    private List<GameObject> players;
+    private const string GAME_SCENE_NAME = "PrototypeArena";
+    private const string MENU_SCENE_NAME = "MainMenu";
 
     #region Logging helpers
     private const string LogPrefix = "[MyNetworkManager]";
@@ -30,7 +36,6 @@ public class MyNetworkManager : NetworkManager
     public override void OnStartServer()
     {
         base.OnStartServer();
-        players = new List<GameObject>();
         Log("Server started successfully.");
     }
 
@@ -67,119 +72,78 @@ public class MyNetworkManager : NetworkManager
     /// </summary>
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        if (conn == null)
+        base.OnServerAddPlayer(conn);
+        /*if (SceneManager.GetActiveScene().name == GAME_SCENE_NAME)
         {
-            LogError("OnServerAddPlayer called with null connection.");
-            return;
-        }
+            if (conn == null)
+            {
+                LogError("OnServerAddPlayer called with null connection.");
+                return;
+            }
 
-        // If this connection already has an identity, we should not create another player.
-        if (conn.identity != null)
+            // If this connection already has an identity, we should not create another player.
+            if (conn.identity != null)
+            {
+                LogWarning($"Skipping AddPlayer: player already exists for connection {conn.connectionId}.");
+                return;
+            }
+
+            // playerPrefab is defined on NetworkManager; ensure it's set to avoid runtime errors.
+            if (playerPrefab == null)
+            {
+                LogError("playerPrefab is not assigned on the NetworkManager. Cannot spawn player.");
+                return;
+            }
+
+            Transform startPos = GetStartPosition();
+
+            // Instantiate player at spawn point or origin.
+            Vector3 spawnPos = startPos != null ? startPos.position : Vector3.zero;
+            Quaternion spawnRot = startPos != null ? startPos.rotation : Quaternion.identity;
+
+            GameObject player = Instantiate(playerPrefab, spawnPos, spawnRot);
+
+            // Add player for connection (this registers the player with Mirror and spawns on clients)
+            NetworkServer.AddPlayerForConnection(conn, player);
+
+            // Cache commonly-used components to avoid multiple GetComponent calls and to check for missing components.
+
+            if (!player.TryGetComponent(out CipherController playerCipherController))
+            {
+                // Not fatal: some players may not have this component depending on prefab layout.
+                LogError($"Spawned player (netId: {player.GetComponent<NetworkIdentity>().netId}) has no CipherController component.");
+            }
+
+            if (!player.TryGetComponent(out NetworkCipherPlayer networkCipher))
+            {
+                LogError($"Spawned player (netId: {player.GetComponent<NetworkIdentity>().netId}) has no NetworkCipher component.");
+            }
+
+            // Final informative log.
+            var nid = player.GetComponent<NetworkIdentity>();
+            Log($"Player spawned for connection {conn.connectionId} (netId: {nid?.netId})");
+            players ??= new List<GameObject>();
+
+            if (players.Count == expectedPlayers)
+            {
+                //RpcNotifyAllPlayersReady();
+                OnAllPlayersSpawned?.Invoke();
+            }
+        }*/
+    }
+
+    public override void ServerChangeScene(string newSceneName)
+    {
+        if (newSceneName == GAME_SCENE_NAME)
         {
-            LogWarning($"Skipping AddPlayer: player already exists for connection {conn.connectionId}.");
-            return;
+            //if cipher ->
+            playerPrefab = CipherPlayerPrefab;
+            this.onlineScene = newSceneName;
         }
-
-        // playerPrefab is defined on NetworkManager; ensure it's set to avoid runtime errors.
-        if (playerPrefab == null)
+        else if (newSceneName == MENU_SCENE_NAME)
         {
-            LogError("playerPrefab is not assigned on the NetworkManager. Cannot spawn player.");
-            return;
+            playerPrefab = PlayerEntryUIPrefab;
         }
-
-        Transform startPos = GetStartPosition();
-
-        // Instantiate player at spawn point or origin.
-        Vector3 spawnPos = startPos != null ? startPos.position : Vector3.zero;
-        Quaternion spawnRot = startPos != null ? startPos.rotation : Quaternion.identity;
-
-        GameObject player = Instantiate(playerPrefab, spawnPos, spawnRot);
-
-        // Add player for connection (this registers the player with Mirror and spawns on clients)
-        NetworkServer.AddPlayerForConnection(conn, player);
-
-        // Cache commonly-used components to avoid multiple GetComponent calls and to check for missing components.
-
-        if (!player.TryGetComponent(out CipherController playerCipherController))
-        {
-            // Not fatal: some players may not have this component depending on prefab layout.
-            LogError($"Spawned player (netId: {player.GetComponent<NetworkIdentity>().netId}) has no CipherController component.");
-        }
-
-        if(!player.TryGetComponent(out NetworkCipherPlayer networkCipher))
-        {
-            LogError($"Spawned player (netId: {player.GetComponent<NetworkIdentity>().netId}) has no NetworkCipher component.");
-        }
-
-        // Final informative log.
-        var nid = player.GetComponent<NetworkIdentity>();
-        Log($"Player spawned for connection {conn.connectionId} (netId: {nid?.netId})");
-        players ??= new List<GameObject>();
-
-        if(players.Count == expectedPlayers)
-        {
-            //RpcNotifyAllPlayersReady();
-            OnAllPlayersSpawned?.Invoke();
-        }
+        base.ServerChangeScene(newSceneName);
     }
-
-    /// <summary>
-    /// A client disconnected from the server. Keep the base behaviour and log the event.
-    /// </summary>
-    public override void OnServerDisconnect(NetworkConnectionToClient conn)
-    {
-        Log($"Connection {conn.connectionId} disconnected.");
-        base.OnServerDisconnect(conn);
-    }
-
-    /// <summary>
-    /// Called when the local client connects to a server.
-    /// </summary>
-    public override void OnClientConnect()
-    {
-        Log("Connected to server.");
-        base.OnClientConnect();
-    }
-
-    /// <summary>
-    /// Called when the local client disconnects from a server.
-    /// </summary>
-    public override void OnClientDisconnect()
-    {
-        Log("Disconnected from server.");
-        base.OnClientDisconnect();
-    }
-
-    /// <summary>
-    /// Server-side transport error.
-    /// </summary>
-    public override void OnServerError(NetworkConnectionToClient conn, TransportError error, string reason)
-    {
-        LogError($"Network error on connection {conn?.connectionId}: {error} ({reason})");
-        base.OnServerError(conn, error, reason);
-    }
-
-    /// <summary>
-    /// Client-side transport error.
-    /// </summary>
-    public override void OnClientError(TransportError error, string reason)
-    {
-        LogError($"Client network error: {error} ({reason})");
-        base.OnClientError(error, reason);
-    }
-
-    /// <summary>
-    /// New server connection — keep base behaviour and log the connect.
-    /// </summary>
-    public override void OnServerConnect(NetworkConnectionToClient conn)
-    {
-        Log($"New server connection {conn.connectionId}");
-        base.OnServerConnect(conn);
-    }
-
-    //[ClientRpc]
-    //private void RpcNotifyAllPlayersReady()
-    //{
-    //    OnAllPlayersSpawned?.Invoke();
-    //}
 }

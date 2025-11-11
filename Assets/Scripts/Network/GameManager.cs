@@ -5,6 +5,7 @@ using Steamworks;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private LobbyUIManager lobbyUIManager;
     public static GameManager Instance;
     public Dictionary<string, PlayerData> connectedPlayers = new();
 
@@ -17,6 +18,14 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    private void Start()
+    {
+        if(!lobbyUIManager.gameObject.activeInHierarchy)
+        {
+            lobbyUIManager.gameObject.SetActive(true);
+        }
     }
 
     public void RegisterPlayer(PlayerData data)

@@ -58,6 +58,7 @@ public class CipherController : MonoBehaviour
 
     #region Weapon System
     [Header("Weapon Inventory")]
+    [SerializeField] private GameObject baseWeaponPrefab;
     public Weapon currentActiveWeapon;
     public Weapon currentFirstPrimary;
     public Weapon currentSecondPrimary;
@@ -233,25 +234,28 @@ public class CipherController : MonoBehaviour
     {
         // Setup first primary weapon
         var firstPrimaryDef = WeaponDatabase.Get(loadout.FirstPrimaryWeaponID);
-        var weapon = Instantiate(firstPrimaryDef.WeaponModelPrefab, activeWeaponSlot);
+        var weapon = Instantiate(baseWeaponPrefab, activeWeaponSlot);
         var w = weapon.GetComponent<Weapon>();
         w.SetupFromDefinition(firstPrimaryDef);
         currentFirstPrimary = w;
         currentActiveWeapon = w;
+        Debug.Log("First weapon is ok");
 
         // Setup second primary weapon
         var secondPrimaryDef = WeaponDatabase.Get(loadout.SecondPrimaryWeaponID);
-        weapon = Instantiate(secondPrimaryDef.WeaponModelPrefab, secondPrimaryWeaponSlot);
+        weapon = Instantiate(baseWeaponPrefab, secondPrimaryWeaponSlot);
         w = weapon.GetComponent<Weapon>();
         w.SetupFromDefinition(secondPrimaryDef);
         currentSecondPrimary = w;
+        Debug.Log("Second weapon is ok");
 
         // Setup secondary weapon
         var secondaryDef = WeaponDatabase.Get(loadout.SecondaryWeaponID);
-        weapon = Instantiate(secondaryDef.WeaponModelPrefab, secondaryWeaponSlot);
+        weapon = Instantiate(baseWeaponPrefab, secondaryWeaponSlot);
         w = weapon.GetComponent<Weapon>();
         w.SetupFromDefinition(secondaryDef);
         currentSecondary = w;
+        Debug.Log("Third weapon is ok");
 
         // Setup skills
         CurrentSkills.Clear();
@@ -260,6 +264,7 @@ public class CipherController : MonoBehaviour
             var skillDef = SkillDatabase.Get(skillID);
             //CurrentSkills.Add(Instantiate(skillDef.Prefab, skillContainer));
         }
+        Debug.Log("Skils are ok");
     }
     #endregion
 

@@ -4,15 +4,14 @@ using TMPro;
 using Steamworks;
 using System.Collections.Generic;
 using Mirror;
-using System.Reflection;
+using System.Collections;
 
-/// <summary>
-/// Manages the lobby UI: main menu, lobby panel and player list display.
-/// Grouped into regions and includes small optimizations (cached FieldInfo,
-/// safer lifecycle handling) to reduce runtime overhead.
-/// </summary>
-public class LobbyUIManager : MonoBehaviour
+public class LobbyUIManager : NetworkBehaviour
 {
+    private static readonly WaitForSeconds _waitForSeconds1 = new(1f);
+    public static LobbyUIManager Instance;
+    private const string GAME_SCENE_NAME = "PrototypeArena";
+
     #region Inspector
     [Header("Main Panel")]
     [SerializeField] private GameObject mainPanel;
@@ -21,12 +20,10 @@ public class LobbyUIManager : MonoBehaviour
 
     [Header("Lobby Panel")]
     [SerializeField] private GameObject lobbyPanel;
-    [SerializeField] private Transform playersContainer;
-    [SerializeField] private GameObject playerEntryPrefab;
+    [SerializeField] private Transform playerListParent;
     [SerializeField] private TMP_Text lobbyStatusText;
 
     [Header("Lobby Buttons")]
-    [SerializeField] private Button readyButton;
     [SerializeField] private Button startGameButton;
     [SerializeField] private Button leaveButton;
 
@@ -35,19 +32,23 @@ public class LobbyUIManager : MonoBehaviour
     #endregion
 
     #region References / State
-    private LobbyController lobbyController;
+    [SerializeField] private SteamLobbyController lobbyController;
+    #endregion
 
-    // Cache the FieldInfo for the private currentLobbyID in LobbyController to avoid
-    // doing repeated reflection lookups every update tick.
-    private FieldInfo currentLobbyField;
-
-    // Map Steam IDs to UI entries so we can add/remove/update efficiently.
-    private Dictionary<CSteamID, PlayerEntryUI> playerEntries = new();
+    #region Public fields
+    public List<PlayerEntryUI> playerEntries = new();
     #endregion
 
     #region Unity Lifecycle
     private void Awake()
     {
+        Debug.Log("[LobbyUIManager] LobbyUI is awake");
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
         // Ensure cursor is usable in menus
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -55,23 +56,18 @@ public class LobbyUIManager : MonoBehaviour
 
     private void Start()
     {
-        lobbyController = FindFirstObjectByType<LobbyController>();
+        Debug.Log("[LobbyUIManager] LobbyUI started");
         if (lobbyController == null)
         {
             Debug.LogError("[LobbyUIManager] No LobbyController found in scene!");
             return;
         }
 
-        // Cache FieldInfo for performance (used in UpdateLobbyDisplay)
-        currentLobbyField = typeof(LobbyController).GetField("currentLobbyID",
-            BindingFlags.NonPublic | BindingFlags.Instance);
-
         // Wire up main menu buttons (check for null to avoid runtime errors)
         if (buttonHost != null) buttonHost.onClick.AddListener(OnHostClicked);
         if (buttonJoin != null) buttonJoin.onClick.AddListener(OnJoinClicked);
 
         // Wire up lobby buttons
-        if (readyButton != null) readyButton.onClick.AddListener(OnReadyClicked);
         if (startGameButton != null) startGameButton.onClick.AddListener(OnStartGameClicked);
         if (leaveButton != null) leaveButton.onClick.AddListener(OnLeaveClicked);
 
@@ -82,7 +78,7 @@ public class LobbyUIManager : MonoBehaviour
         lobbyController.OnLobbyJoined += OnLobbyJoined;
 
         // Refresh the lobby display regularly; the frequency can be tuned as needed
-        InvokeRepeating(nameof(UpdateLobbyDisplay), 1f, 2f);
+        //InvokeRepeating(nameof(UpdateLobbyDisplay), 1f, 2f);
     }
 
     private void OnDestroy()
@@ -93,12 +89,16 @@ public class LobbyUIManager : MonoBehaviour
 
         if (buttonHost != null) buttonHost.onClick.RemoveListener(OnHostClicked);
         if (buttonJoin != null) buttonJoin.onClick.RemoveListener(OnJoinClicked);
-        if (readyButton != null) readyButton.onClick.RemoveListener(OnReadyClicked);
         if (startGameButton != null) startGameButton.onClick.RemoveListener(OnStartGameClicked);
         if (leaveButton != null) leaveButton.onClick.RemoveListener(OnLeaveClicked);
     }
     #endregion
 
+    public void RegisterPlayer(PlayerEntryUI player)
+    {
+        player.transform.SetParent(playerListParent, false);
+        UpdateLobbyDisplay();
+    }
     #region UI Helpers
     /// <summary>
     /// Show either the main panel or the lobby panel.
@@ -117,6 +117,7 @@ public class LobbyUIManager : MonoBehaviour
         if (buttonHost != null) buttonHost.interactable = false;
         if (buttonJoin != null) buttonJoin.interactable = false;
         lobbyController?.CreateLobby();
+        SwapPanel(true);
     }
 
     private void OnJoinClicked()
@@ -127,21 +128,26 @@ public class LobbyUIManager : MonoBehaviour
         // Steam overlay will trigger the relevant LobbyController callback
     }
 
-    private void OnReadyClicked()
+    public void OnReadyClicked(bool readyState)
     {
-        lobbyController?.SetReady(true);
-        if (readyButton != null) readyButton.interactable = false;
-        if (lobbyStatusText != null) lobbyStatusText.text = "You are ready! Waiting for others...";
+        if (lobbyStatusText != null)
+        {
+            lobbyStatusText.text = readyState ? "You are ready! Waiting for others..." : "You are not ready.";
+        }
     }
 
     private void OnStartGameClicked()
     {
-        lobbyController?.StartGame();
+        lobbyController.StartGame();
+        if(NetworkServer.active)
+        {
+            NetworkManager.singleton.ServerChangeScene(GAME_SCENE_NAME);
+        }
     }
 
     private void OnLeaveClicked()
     {
-        lobbyController?.LeaveCurrentLobby();
+        lobbyController?.LeaveLobby();
         ResetToMainMenu();
     }
     #endregion
@@ -153,7 +159,6 @@ public class LobbyUIManager : MonoBehaviour
         SwapPanel(true);
 
         if (leaveButton != null) leaveButton.gameObject.SetActive(true);
-        if (readyButton != null) readyButton.gameObject.SetActive(true);
 
         if (lobbyController != null && lobbyController.IsHost)
         {
@@ -175,63 +180,52 @@ public class LobbyUIManager : MonoBehaviour
     /// Updates the player list UI from Steam matchmaking. Uses the cached FieldInfo to
     /// read the current lobby ID from LobbyController without repeated reflection lookups.
     /// </summary>
-    private void UpdateLobbyDisplay()
+    public void UpdateLobbyDisplay()
     {
-        if (!SteamManager.Initialized) return;
-        if (lobbyController == null) return;
+        if(!lobbyPanel.activeInHierarchy){ return; }
+        playerEntries.Clear();
 
-        if (currentLobbyField == null) return; // can't read lobby id
-
-        CSteamID lobbyID = (CSteamID)currentLobbyField.GetValue(lobbyController);
-        if (lobbyID == CSteamID.Nil) return;
-
-        int memberCount = SteamMatchmaking.GetNumLobbyMembers(lobbyID);
+        var lobby = SteamLobbyController.Instance.currentLobbyID;
+        int memberCount = SteamMatchmaking.GetNumLobbyMembers(lobby);
         if (lobbyStatusText != null) lobbyStatusText.text = $"{memberCount} player(s) in lobby";
 
-        // Remove entries for players who left
-        foreach (var id in new List<CSteamID>(playerEntries.Keys))
+        CSteamID hostID = new(ulong.Parse(SteamMatchmaking.GetLobbyData(lobby, "host")));
+        List<CSteamID> orderedMembers = new();
+
+        if (memberCount == 0)
         {
-            bool stillInLobby = false;
-            for (int i = 0; i < memberCount; i++)
+            Debug.LogWarning("[LobbyUIManager] Lobby has no members.. retrying...");
+            StartCoroutine(RetryUpdate());
+            return;
+        }
+
+        orderedMembers.Add(hostID);
+
+        for (int i = 0; i < memberCount; i++)
+        {
+            CSteamID memberID = SteamMatchmaking.GetLobbyMemberByIndex(lobby, i);
+            if (memberID != hostID)
             {
-                if (SteamMatchmaking.GetLobbyMemberByIndex(lobbyID, i) == id)
-                {
-                    stillInLobby = true;
-                    break;
-                }
-            }
-            if (!stillInLobby)
-            {
-                if (playerEntries.TryGetValue(id, out var removedEntry))
-                {
-                    Destroy(removedEntry.gameObject);
-                    playerEntries.Remove(id);
-                }
+                orderedMembers.Add(memberID);
             }
         }
 
-        // Add or update players
-        for (int i = 0; i < memberCount; i++)
+        int j = 0;
+        foreach(var member in orderedMembers)
         {
-            CSteamID memberId = SteamMatchmaking.GetLobbyMemberByIndex(lobbyID, i);
-            string name = SteamFriends.GetFriendPersonaName(memberId);
-            string readyValue = SteamMatchmaking.GetLobbyMemberData(lobbyID, memberId, "ready");
-            bool isReady = readyValue == "1";
-
-            Texture2D avatar = GetSteamAvatar(memberId);
-
-            if (!playerEntries.ContainsKey(memberId))
+            if (!playerListParent.GetChild(j).TryGetComponent<PlayerEntryUI>(out var entry))
             {
-                var entryObj = Instantiate(playerEntryPrefab, playersContainer);
-                var ui = entryObj.GetComponent<PlayerEntryUI>();
-                playerEntries.Add(memberId, ui);
+                Debug.LogError($"Member {j} has no player entry");
             }
 
-            playerEntries[memberId].SetData(name, avatar, isReady);
+            string playerName = SteamFriends.GetFriendPersonaName(member);
+            Texture2D avatar = GetSteamAvatar(member);
+            string readyValue = SteamMatchmaking.GetLobbyMemberData(lobby, member, "ready");
+            bool isReady = readyValue == "1";
+            entry.SetData(playerName, avatar, isReady);
+            playerEntries.Add(entry);
+            j++;
 
-            // Register player data with game manager if available
-            if (GameManager.Instance != null)
-                GameManager.Instance.RegisterPlayer(new PlayerData(name, avatar));
         }
 
         if (netManager != null)
@@ -262,19 +256,59 @@ public class LobbyUIManager : MonoBehaviour
     #endregion
 
     #region Reset / Cleanup
-    private void ResetToMainMenu()
+    public void ResetToMainMenu()
     {
-        // Destroy existing UI entries and clear dictionary
-        foreach (var entry in playerEntries.Values)
-            Destroy(entry.gameObject);
+        // Safely destroy all child GameObjects under playerListParent.
+        if (playerListParent != null)
+        {
+            // Iterate backwards to avoid issues when removing children
+            for (int i = playerListParent.childCount - 1; i >= 0; i--)
+            {
+                var child = playerListParent.GetChild(i);
+                if (child == null) continue;
+
+                // Destroy differently depending on edit/play mode
+                if (Application.isPlaying)
+                    Destroy(child.gameObject);
+                else
+                    DestroyImmediate(child.gameObject);
+            }
+        }
+
         playerEntries.Clear();
 
         // Re-enable main menu buttons safely
         if (buttonHost != null) buttonHost.interactable = true;
         if (buttonJoin != null) buttonJoin.interactable = true;
-        if (readyButton != null) readyButton.interactable = true;
 
         SwapPanel(false);
     }
     #endregion
+
+    [Server]
+    public void CheckAllPlayersReady()
+    {
+        foreach (var player in playerEntries)
+        {
+            if (!player.isReady)
+            {
+                RpcSetPlayButtonInteractable(false);
+                return;
+            }
+        }
+        RpcSetPlayButtonInteractable(true);
+    }
+
+    [ClientRpc]
+    void RpcSetPlayButtonInteractable(bool status)
+    {
+        startGameButton.interactable = status;
+    }
+    
+    private IEnumerator RetryUpdate()
+    {
+        yield return _waitForSeconds1;
+        UpdateLobbyDisplay();
+    }
+
 }
